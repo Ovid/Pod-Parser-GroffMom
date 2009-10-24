@@ -126,6 +126,16 @@ sub verbatim {
     my ( $self, $verbatim, $paragraph, $line_num ) = @_;
     $paragraph = $self->_trim($paragraph);
     print "Verbatim ($verbatim) ($paragraph)\n";
+    $self->add_to_mom(sprintf <<'END' => $verbatim);
+.FAM C
+.LEFT
+.L_MARGIN 1.25i
+%s
+.QUAD
+.L_MARGIN 1i
+.FAM H
+.PT 12
+END
 }
 
 sub textblock {
