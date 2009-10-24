@@ -1,0 +1,53 @@
+.TITLE    "Some Doc"
+.SUBTITLE "Some Subtitle"
+.AUTHOR   "Curtis 'Ovid' Poe"
+.COPYRIGHT "2009, Curtis 'Ovid' Poe"
+.COVER TITLE SUBTITLE AUTHOR COPYRIGHT
+.PRINTSTYLE TYPESET
+\#
+.FAM H
+.PT 12
+.START
+
+.HEAD "This is a header"
+.SUBHEAD "This is a subheader"
+
+This is a paragraph
+
+.L_MARGIN 1.25i
+.LIST BULLET
+.ITEM
+First item
+.ITEM
+Second item
+.LIST END
+.L_MARGIN 1i
+
+.L_MARGIN 1.25i
+.LIST DIGIT
+.ITEM
+First item
+.ITEM
+Second item
+.LIST END
+.L_MARGIN 1i
+
+.NEWPAGE
+
+Let's have another
+paragraph.
+
+.FAM C
+.LEFT
+.L_MARGIN 1.25i
+#!/usr/bin/env perl
+use strict;
+use warnings;
+print "Hello, World\\n";
+.QUAD
+.L_MARGIN 1i
+.FAM H
+.PT 12
+
+This is more text
+that does not break
