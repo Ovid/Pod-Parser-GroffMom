@@ -253,8 +253,114 @@ sub interior_sequence {
 =head1 SYNOPSIS
 
     use Pod::Parser::Groffmom;
-    my $foo = Pod::Parser::Groffmom->new();
+    my $foo  = Pod::Parser::Groffmom->new();
+    my $file = 't/test_pod.pod';
+    open my $fh, '<', $file 
+      or die "Cannot open ($file) for reading: $!";
+    $parser->parse_from_filehandle($fh);
+    print $parser->mom;
 
+If you have printed the "mom" output to file named 'my.mom', you can then do this:
+
+  groff -mom my.mom > my.ps
+
+And you will have a postscript file suitable for opening in C<gv>, Apple's
+C<Preview.app> or anything else which can read postscript files.
+
+=head1 DESCRIPTION
+
+This subclass of C<Pod::Parser> will take a POD file and produce "mom"
+output.  See L<http://linuxgazette.net/107/schaffter.html> for a gentle
+introduction.
+
+If you have C<groff> on your system, it I<should> have docs for "momdoc".
+Otherwise, you can read them at 
+L<http://www.opensource.apple.com/source/groff/groff-28/groff/contrib/mom/momdoc/toc.html?f=text>.
+
+The "mom" documentation is not needed to use this module, but it would be
+needed if you wish to hack on it.
+
+=head1 ALPHA CODE
+
+This is alpha code.  There's not much control over it yet and there are plenty
+of POD corner cases it doesn't handle.
+
+=head1 MOM COMMANDS
+
+Most POD files will convert directly to "mom" output.  However, when you view
+the result, you might want more control over it.  The following is how
+MOM directives are handled.  They may begin with either '=head1' or =head2'.
+It doesn't matter (this might change later).
+
+=over 4
+
+=item * NAME
+
+ =head1 NAME
+
+ This is the title of the pod.
+
+Whatever follows "NAME" will be the title of your document.
+
+=item * TITLE
+
+ =head1 TITLE
+
+ This is the title of the pod.
+
+Synonymous with 'NAME'.  You may only have one title for a document.
+
+=item * SUBTITLE
+
+ =head1 SUBTITLE
+
+ This is the subtitle of the pod.
+
+=item * AUTHOR
+
+ =head1 AUTHOR
+
+ Curtis "Ovid" Poe
+
+This is the author of your document.
+
+=item * COPYRIGHT
+
+ =head1 COPYRIGHT
+
+ 2009, Curtis "Ovid" Poe
+
+This will be the copyright statement on your pod.  Will only appear in the
+document if the C<=head1 COVER> command is given.
+
+=item * COVER
+
+ =head1 COVER
+
+Does not require any text after it.  This is merely a boolean command telling
+C<Pod::Parser::Groffmom> to create a cover page.
+
+=item * NEWPAGE
+
+ =head1 NEWPAGE
+
+Does not require any text after it.  This is merely a boolean command telling
+C<Pod::Parser::Groffmom> to create page break here.
+
+=back
+
+=head1 LIMITATIONS
+
+Probably plenty.
+
+=over 4
+
+=item * We don't yet handle numbered lists.
+
+=item * Lines of POD starting with a dot '.' character may behave unexpectedly.
+
+=item * Inline sequences are handled poorly.
+=back
 =head1 AUTHOR
 
 Curtis "Ovid" Poe, C<< <ovid at cpan.org> >>
