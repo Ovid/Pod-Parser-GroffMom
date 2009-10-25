@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::Most 'no_plan';
+use Test::Most tests => 5;
 use Pod::Parser::Groffmom;
 
 my $parser;
