@@ -70,7 +70,6 @@ sub command {
 
     my $is_mom = $self->is_mom($paragraph);
     $paragraph = lc $paragraph if $is_mom;
-    print "Command $command ($paragraph)\n";
     if ($is_mom) {
         $self->parse_mom( $command, $paragraph, $line_num );
     }
@@ -193,7 +192,6 @@ END
 sub verbatim {
     my ( $self, $verbatim, $paragraph, $line_num ) = @_;
     $paragraph = $self->_trim($paragraph);
-    print "Verbatim ($verbatim) ($paragraph)\n";
     $verbatim =~ s/\s+$//s;
     $self->add( sprintf <<'END' => $verbatim );
 .FAM C
@@ -212,7 +210,6 @@ END
 sub textblock {
     my ( $self, $textblock, $paragraph, $line_num ) = @_;
     $textblock = $self->_escape( $self->_trim($textblock) );
-    print "Textblock $textblock ($paragraph)\n";
     $textblock = $self->interpolate($textblock, $line_num);
     foreach my $method ( $self->mom_methods ) {
         my $mom_method = "mom_$method";
@@ -233,7 +230,8 @@ sub add {
 }
 
 sub interior_sequence {
-    my ( $self, $sequence, $paragraph, $line_num ) = @_;
+    my ( $self, $sequence, $paragraph ) = @_;
+
     $paragraph = $self->_trim($paragraph);
     if ( $sequence eq 'I' ) {
         return "\\f[I]$paragraph\\f[P]";
@@ -245,8 +243,8 @@ sub interior_sequence {
         return "\\f[B]$paragraph\\f[P]";
     }
     else {
-        carp("Uknown sequence ($sequence<$paragraph> at line $line_num)");
-        return "$sequence<$paragraph>";
+        carp("Unknown sequence ($sequence<$paragraph>).  Stripping sequence code.");
+        return $paragraph;
     }
 }
 

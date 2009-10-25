@@ -36,13 +36,34 @@ subtest 'escape' => sub {
 };
 
 subtest 'interior sequences' => sub {
-    plan tests => 4;
+    plan tests => 6;
     can_ok $parser, 'interior_sequence';
 
-    is $parser->interior_sequence('I', 'italics'),
-        '\\f[I]italics\\f[P]', '... and it should render italics correctly';
-    is $parser->interior_sequence('B', 'bold'),
-        '\\f[B]bold\\f[P]', '... and it should render bold correctly';
-    is $parser->interior_sequence('C', 'code'),
-        '\\f[C]code\\f[P]', '... and it should render code correctly';
+    is $parser->interior_sequence( 'I', 'italics' ),
+      '\\f[I]italics\\f[P]', '... and it should render italics correctly';
+    is $parser->interior_sequence( 'B', 'bold' ),
+      '\\f[B]bold\\f[P]', '... and it should render bold correctly';
+    is $parser->interior_sequence( 'C', 'code' ),
+      '\\f[C]code\\f[P]', '... and it should render code correctly';
+    my $result;
+    warning_like { $result = $parser->interior_sequence( '?', 'unknown' ) }
+    qr/^Unknown sequence \Q(?<unknown>)\E/,
+      'Unknown sequences should warn correctly';
+    is $result, 'unknown', '... but still return the sequence interior';
+};
+
+subtest 'textblock' => sub {
+    plan tests => 2;
+    my $text = <<'    END';
+This is some text with
+  an embedded C<code> block.
+    END
+    my $expected = <<'    END';
+This is some text with
+  an embedded \f[C]code\f[P] block.
+
+    END
+    can_ok $parser, 'textblock';
+    eq_or_diff $parser->textblock( $text, 2, 3 ), $expected,
+      '... and it should parse textblocks correctly';
 };
