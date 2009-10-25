@@ -1,0 +1,23 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use lib 'lib';
+use Pod::Parser::Groffmom;
+my $parser = Pod::Parser::Groffmom->new;
+my $file = shift or die "makemom podfile";
+unless ( $file =~ /\.pod$/ ) {
+    die "Only pod files";
+}
+my $mom = $file;
+$mom =~ s/\.pod$/.mom/;
+my $ps = $file;
+$ps =~ s/\.pod$/.ps/;
+open my $fh, '<', $file or die "Cannot open ($file) for reading: $!";
+$parser->parse_from_filehandle($fh);
+open my $out, '>', $mom or die "$!";
+print $out $parser->mom;
+my $command = "groff -mom > $ps $mom && open $ps";
+print $command,$/;
+system($command) == 0 or die $?;
