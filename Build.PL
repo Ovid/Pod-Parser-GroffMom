@@ -11,7 +11,10 @@ my $builder = Module::Build->new(
         'Moose'           => 0.60,    # hope this one is good enough!
         'Perl6::Junction' => 1.4,
     },
-    build_requires     => { 'Test::More' => 0, },
+    build_requires     => { 
+        'Test::Most' => 0.21,
+        'Test::More' => 0.94,
+    },
     add_to_cleanup     => ['Pod-Parser-Groffmom-*'],
     create_makefile_pl => 'traditional',
 );
