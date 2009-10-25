@@ -2,7 +2,12 @@ Build.PL
 Changes
 MANIFEST
 README
+examples/makemom
 lib/Pod/Parser/Groffmom.pm
 t/00-load.t
-t/pod-coverage.t
-t/pod.t
+t/basic.t
+t/test_pod.pod
+xt/pod-coverage.t
+xt/pod.t
+Makefile.PL
+META.yml
