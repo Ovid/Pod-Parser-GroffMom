@@ -10,8 +10,9 @@ my $builder = Module::Build->new(
     requires          => {
         'Moose'           => 0.60,    # hope this one is good enough!
         'Perl6::Junction' => 1.4,
+        'Syntax::Highlight::Engine::Kate' => 0.06,
     },
-    build_requires     => { 
+    build_requires => {
         'Test::Most' => 0.21,
         'Test::More' => 0.94,
     },

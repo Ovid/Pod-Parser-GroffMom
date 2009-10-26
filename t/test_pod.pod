@@ -42,3 +42,22 @@ We want POD text to I<automatically> be converted to the correct format.
 =head2 This is a "subheader
 
 This is a paragraph
+
+=head2 Code sample
+
+=for highlight Perl
+
+ ok my $parser = Pod::Parser::Groffmom->new,
+   'We should be able to create a new parser';
+ my $file = 't/test_pod.pod';
+ open my $fh, '<', $file or die "Cannot open ($file) for reading: $!";
+ 
+ can_ok $parser, 'parse_from_filehandle';
+ warning_like { $parser->parse_from_filehandle($fh) }
+     qr/^Found \Q(=item * Second item)\E outside of list at line \d+/,
+     '... and it should parse the file with a warning a bad =item';
+ is $parser->mom, get_mom(),
+     '... and it should render the correct mom';
+
+=end highlight
+

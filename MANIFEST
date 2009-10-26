@@ -3,7 +3,10 @@ Changes
 MANIFEST
 README
 examples/makemom
+examples/TestClass.pod
+examples/testing_with_test_class.pdf
 lib/Pod/Parser/Groffmom.pm
+lib/Pod/Parser/Groffmom/Color.pm
 t/00-load.t
 t/basic.t
 t/internals.t

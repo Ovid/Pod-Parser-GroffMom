@@ -4,6 +4,7 @@ use warnings;
 use strict;
 use Carp qw(carp croak);
 use Perl6::Junction 'any';
+use Pod::Parser::Groffmom::Color ':all';
 
 use Moose;
 use Moose::Util::TypeConstraints 'enum';
@@ -21,6 +22,7 @@ foreach my $method ( @MOM_METHODS, @MOM_BOOLEANS ) {
 has head    => ( is => 'rw' );
 has subhead => ( is => 'rw' );
 has mom     => ( is => 'rw', isa => 'Str', default => '' );
+has highlight => ( is => 'rw' );
 
 # list helpers
 has list_data => ( is => 'rw', isa => 'Str', default => '' );
@@ -58,6 +60,10 @@ sub _trim {
 sub _escape {
     my ( $self, $text ) = @_;
     $text =~ s/"/\\[dq]/g;
+
+    # This is a quick and nasty hack, but we assume that we escape all
+    # backslashes unless they look like they're followed by a mom escape
+    $text =~ s/\\(?!\[\w+\])/\\\\/g;
     return $text;
 }
 
@@ -105,10 +111,25 @@ sub build_mom {
         $self->add_to_mom(qq{.SUBHEAD "$paragraph"\n\n});
     }
     elsif ( 'head3' eq $command ) {
+        $self->interpolate($paragraph);
         $self->add_to_mom(qq{\\f[B]$paragraph\\f[P]\n\n});
     }
     elsif ( any(qw/over item back/) eq $command ) {
         $self->build_list( $command, $paragraph, $line_num );
+    }
+    elsif ( 'for' eq $command ) {
+        $paragraph = $self->_trim($paragraph);
+        my ( $target, $language ) = $paragraph =~ /^(highlight)(?:\s+(\S*))?$/;
+        if ( $target && !$language ) {
+            $language = 'Perl';
+        }
+        $self->highlight(get_highlighter($language));
+    }
+    elsif ( 'end' eq $command ) {
+        $paragraph = $self->_trim($paragraph);
+        if ( $paragraph eq 'highlight' ) {
+            $self->highlight('');
+        }
     }
     else {
         carp("Unknown command ($command) at line $line_num");
@@ -141,6 +162,7 @@ sub build_list {
         # default to BULLET if we cannot identify the list type
         $self->list_type( $list_type ne '*' ? 'DIGIT' : 'BULLET' )
           if not $self->list_type;
+        $item = $self->interpolate($item);
         $self->add_to_list(".ITEM\n$item\n");
     }
 }
@@ -154,6 +176,7 @@ sub add_to_mom {
 sub add_to_list {
     my ( $self, $text ) = @_;
     return unless defined $text;
+    $text = $self->interpolate($text);
     $self->list_data( ( $self->list_data || '' ) . $text );
 }
 
@@ -179,11 +202,14 @@ sub end_input {
         }
         $mom .= "$cover\n";
     }
-    $mom .= <<'END';
+    my $color_definitions = Pod::Parser::Groffmom::Color->color_definitions;
+    $mom .= <<"END";
 .PRINTSTYLE TYPESET
-\#
+\\#
 .FAM H
 .PT_SIZE 12
+\\#
+$color_definitions
 .START
 END
     $self->mom($mom .= $self->mom);
@@ -191,8 +217,13 @@ END
 
 sub verbatim {
     my ( $self, $verbatim, $paragraph, $line_num ) = @_;
-    $paragraph = $self->_trim($paragraph);
     $verbatim =~ s/\s+$//s;
+    if ( $self->highlight ) {
+        $verbatim = $self->highlight->highlightText($verbatim);
+    }
+    else {
+        $verbatim = $self->_escape($verbatim);
+    }
     $self->add( sprintf <<'END' => $verbatim );
 .FAM C
 .PT_SIZE 10
@@ -345,6 +376,32 @@ C<Pod::Parser::Groffmom> to create a cover page.
 Does not require any text after it.  This is merely a boolean command telling
 C<Pod::Parser::Groffmom> to create page break here.
 
+=item * for highlight
+
+ =for highlight Perl
+   
+  sub add {
+      my ( $self, $data ) = @_;
+      my $add = $self->in_list_mode ? 'add_to_list' : 'add_to_mom';
+      $self->$add($data);
+  }
+
+ =end highlight
+
+This turns on syntax highlighting.  Allowable highlight types are the types
+allowed for C<Syntax::Highlight::Engine::Kate>.  We default to Perl, so the
+above can be written as:
+
+ =for highlight 
+   
+  sub add {
+      my ( $self, $data ) = @_;
+      my $add = $self->in_list_mode ? 'add_to_list' : 'add_to_mom';
+      $self->$add($data);
+  }
+
+ =end highlight
+
 =back
 
 =head1 LIMITATIONS
@@ -358,7 +415,19 @@ Probably plenty.
 =item * Lines of POD starting with a dot '.' character may behave unexpectedly.
 
 =item * Inline sequences are handled poorly.
+
+=item * Syntax highlighting is experimental and a bit flaky.
+
+Some lines after comments are highlighted as comments.  Also, POD in verbatim
+(indented) POD highlights incorrectly.  C<Common_Lisp> is allegedly supported
+by C<Syntax::Highlight::Engine::Kate>, but we were getting weird stack errors
+when we tried to highlight it.
+
+Also, don't use angle brackets with quote operators like C<q> or C<qq>.  The
+highlighter gets confused.
+
 =back
+
 =head1 AUTHOR
 
 Curtis "Ovid" Poe, C<< <ovid at cpan.org> >>

@@ -96,10 +96,14 @@ The number of arguments to the functor are known as the I<arity>.  The functor,
 followed by a slash and the arity ("gives/3" in this example) is called the
 I<predicate>.  A predicate can have as many clauses as you like.
 
+=for highlight Prolog
+
  gives(tom, book, sally).
  gives(tom, book, martin).
  gives('George Bush', grief, liberals).
  gives('Bill Clinton', grief, conservatives).
+
+=end highlight
 
 Note that those are not function calls.  Those are merely facts stating the
 relationship of the arguments to one another.  Additionally, "tom" and "book"
@@ -108,11 +112,15 @@ are each repeated.  In Prolog, those each refer to the same entity.
 Of course, facts can have a varying number of arguments, even for the same
 functor.  The following are all legal:
 
+=for highlight Prolog
+
  parent(bob, tim).           % parent/2
  parent(sue, alex, william). % parent/3
  male(sue).                  % male/1
  female(sue).                % female/1
  frobnitz.                   % frobnitz/0
+
+=end highlight
 
 You can name a predicate just about anything that makes sense, but note that
 some predicates are built-in and their names are reserved.  The document
@@ -129,9 +137,13 @@ And that pretty much covers most of what you need to know about facts.
 Rules, like facts, are stored in the program.  Rules describe how we can infer
 new facts, even though we haven't explicitly stated them.
 
+=for highlight Prolog
+
  gives(tom, book, SOMEONE) :-
      person(SOMEONE),
      likes(tom, SOMEONE).
+
+=end highlight
 
 This rule states that "Tom will give a book to anyone who Tom likes." Note that
 we are not telling Prolog how to figure out to whom Tom will give books.
@@ -146,11 +158,15 @@ as would C<SomeOne> or C<SOmeoNe>.
 
 Of course, we could simply enumerate the relationships:
 
+=for highlight Prolog
+
  gives(tom, book, alice).
  gives(tom, book, bob).
  gives(tom, book, martin).
  gives(tom, book, charlie).
  gives(tom, book, ovid).
+
+=end highlight
 
 However, this quickly become unweildy as the number of people in our program
 grows.
@@ -389,11 +405,17 @@ Getting back to Perl, how would we implement that in a Perl program?
 
 The basic process for using C<AI::Prolog> looks something like this:
 
+=for highlight Perl
+
  use AI::Prolog;
  my $prolog = AI::Prolog->new($prolog_code);
 
+=end highlight
+
 Create a new C<AI::Prolog> object, passing Prolog code as the argument.  If you
 prefer, you can wrap the constructor in a C<BEGIN> block:
+
+=for highlight Perl
 
  my $prolog;
  BEGIN {
@@ -401,6 +423,8 @@ prefer, you can wrap the constructor in a C<BEGIN> block:
      % some Prolog code goes here
    END_PROLOG
  }
+
+=end highlight
 
 This is not strictly necessary, but if your Prolog code has a syntax error, it
 will be a compile-time error, not a run-time error, and you'll get an error

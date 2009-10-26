@@ -7,6 +7,25 @@
 \#
 .FAM H
 .PT 12
+\# Color definitions
+.NEWCOLOR Alert        RGB #0000ff
+.NEWCOLOR BaseN        RGB #007f00
+.NEWCOLOR BString      RGB #c9a7ff
+.NEWCOLOR Char         RGB #ff00ff
+.NEWCOLOR Comment      RGB #7f7f7f
+.NEWCOLOR DataType     RGB #0000ff
+.NEWCOLOR DecVal       RGB #00007f
+.NEWCOLOR Error        RGB #ff0000
+.NEWCOLOR Float        RGB #00007f
+.NEWCOLOR Function     RGB #007f00
+.NEWCOLOR IString      RGB #ff0000
+.NEWCOLOR Operator     RGB #ffa500
+.NEWCOLOR Others       RGB #b03060
+.NEWCOLOR RegionMarker RGB #96b9ff
+.NEWCOLOR Reserved     RGB #9b30ff
+.NEWCOLOR String       RGB #ff0000
+.NEWCOLOR Variable     RGB #0000ff
+.NEWCOLOR Warning      RGB #0000ff
 .START
 
 .HEAD "This is a header"
@@ -19,7 +38,7 @@ This is a paragraph
 .ITEM
 First item
 .ITEM
-Second item
+Second \*[String]list\*[black] item
 .LIST END
 .L_MARGIN 1i
 
