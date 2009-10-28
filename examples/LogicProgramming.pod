@@ -16,6 +16,8 @@ Curtis "Ovid" Poe
 
 =head1 COVER
 
+=head1 TOC
+
 =head2 Introduction
 
   A programmer who hasn't been exposed to all four of the imperative,
