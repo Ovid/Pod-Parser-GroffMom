@@ -113,5 +113,7 @@ This is a paragraph
 .FAM H
 .PT_SIZE 12
 
+Test name is Salvador Fandi\N'241'o
+
 END_MOM
 }

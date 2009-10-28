@@ -61,3 +61,4 @@ This is a paragraph
 
 =end highlight
 
+Test name is Salvador FandiE<241>o

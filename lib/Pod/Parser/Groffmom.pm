@@ -273,6 +273,9 @@ sub interior_sequence {
     elsif ( $sequence eq 'B' ) {
         return "\\f[B]$paragraph\\f[P]";
     }
+    elsif ( $sequence eq 'E' ) {
+        return "\\N'$paragraph'";
+    }
     else {
         carp("Unknown sequence ($sequence<$paragraph>).  Stripping sequence code.");
         return $paragraph;

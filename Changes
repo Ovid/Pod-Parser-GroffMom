@@ -1,6 +1,7 @@
 Revision history for Pod-Parser-Groffmom
 
 0.020
+        - Handle E<$number> correctly (but not yet for other languages)
         - Change '=for highlight' to '=begin highlight'
 
 0.001   27/10/2009
