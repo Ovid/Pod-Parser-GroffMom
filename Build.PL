@@ -7,6 +7,7 @@ my $builder = Module::Build->new(
     license           => 'perl',
     dist_author       => 'Curtis "Ovid" Poe <ovid@cpan.org>',
     dist_version_from => 'lib/Pod/Parser/Groffmom.pm',
+    repository        => 'http://github.com/Ovid/Pod-Parser-GroffMom',
     requires          => {
         'Moose'           => 0.60,    # hope this one is good enough!
         'Perl6::Junction' => 1.4,

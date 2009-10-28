@@ -471,6 +471,11 @@ L<http://search.cpan.org/dist/Pod-Parser-Groffmom/>
 
 =back
 
+=head1 REPOSITORY
+
+The latest version of this module can be found at
+L<http://github.com/Ovid/Pod-Parser-GroffMom>.
+
 =head1 ACKNOWLEDGEMENTS
 
 =head1 COPYRIGHT & LICENSE
