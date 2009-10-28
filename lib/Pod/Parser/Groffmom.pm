@@ -12,7 +12,7 @@ extends qw(Pod::Parser Moose::Object);
 
 # order of MOM_METHODS is very important.  See '.COPYRIGHT' in mom docs.
 my @MOM_METHODS  = qw(title subtitle author copyright);
-my @MOM_BOOLEANS = qw(cover newpage);
+my @MOM_BOOLEANS = qw(cover newpage toc);
 my %IS_MOM       = map { uc($_) => 1 } ( @MOM_METHODS, @MOM_BOOLEANS );
 
 foreach my $method ( @MOM_METHODS, @MOM_BOOLEANS ) {
@@ -22,6 +22,7 @@ foreach my $method ( @MOM_METHODS, @MOM_BOOLEANS ) {
 has head    => ( is => 'rw' );
 has subhead => ( is => 'rw' );
 has mom     => ( is => 'rw', isa => 'Str', default => '' );
+has toc => ( is => 'rw', => isa => 'Bool' );
 has highlight => ( is => 'rw' );
 
 # list helpers
@@ -34,7 +35,7 @@ sub mom_booleans { @MOM_BOOLEANS }
 
 sub is_mom {
     my ( $class, $command ) = @_;
-    return 1 if $command eq 'NAME'; # special alias for 'TITLE'
+    return 1 if $command eq 'NAME';    # special alias for 'TITLE'
     return $IS_MOM{$command};
 }
 
@@ -99,6 +100,7 @@ sub parse_mom {
     }
     $self->mom_cover(1)             if $paragraph eq 'cover';
     $self->add_to_mom(".NEWPAGE\n") if $paragraph eq 'newpage';
+    $self->toc(1)                   if $paragraph eq 'toc';
 }
 
 sub build_mom {
@@ -123,7 +125,7 @@ sub build_mom {
         if ( $target && !$language ) {
             $language = 'Perl';
         }
-        $self->highlight(get_highlighter($language));
+        $self->highlight( get_highlighter($language) );
     }
     elsif ( 'end' eq $command ) {
         $paragraph = $self->_trim($paragraph);
@@ -153,7 +155,9 @@ sub build_list {
     }
     elsif ( 'item' eq $command ) {
         if ( not $self->in_list_mode ) {
-            carp("Found (=item $paragraph) outside of list at line $line_num.  Discarding");
+            carp(
+"Found (=item $paragraph) outside of list at line $line_num.  Discarding"
+            );
             return;
         }
         $paragraph =~ /^(\*|\d+)?\s*(.*)/;
@@ -212,7 +216,8 @@ sub end_input {
 $color_definitions
 .START
 END
-    $self->mom($mom .= $self->mom);
+    $self->mom( $mom .= $self->mom );
+    $self->mom( $self->mom . ".TOC\n" ) if $self->toc;
 }
 
 sub verbatim {
@@ -241,7 +246,7 @@ END
 sub textblock {
     my ( $self, $textblock, $paragraph, $line_num ) = @_;
     $textblock = $self->_escape( $self->_trim($textblock) );
-    $textblock = $self->interpolate($textblock, $line_num);
+    $textblock = $self->interpolate( $textblock, $line_num );
     foreach my $method ( $self->mom_methods ) {
         my $mom_method = "mom_$method";
         if ( $self->$method ) {
@@ -277,7 +282,9 @@ sub interior_sequence {
         return "\\N'$paragraph'";
     }
     else {
-        carp("Unknown sequence ($sequence<$paragraph>).  Stripping sequence code.");
+        carp(
+"Unknown sequence ($sequence<$paragraph>).  Stripping sequence code."
+        );
         return $paragraph;
     }
 }
@@ -378,6 +385,15 @@ C<Pod::Parser::Groffmom> to create a cover page.
 
 Does not require any text after it.  This is merely a boolean command telling
 C<Pod::Parser::Groffmom> to create page break here.
+
+=item * TOC
+
+ =head1 TOC
+
+Does not require any text after it.  This is merely a boolean command telling
+C<Pod::Parser::Groffmom> to create a table of contents.  Due to limitations in
+with C<groff -mom>, the table of contents will be the final page of the
+document.
 
 =item * begin highlight
 

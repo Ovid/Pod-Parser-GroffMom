@@ -10,7 +10,7 @@ my $builder = Module::Build->new(
     meta_merge => {
         resources => {
             repository        => 'http://github.com/Ovid/Pod-Parser-GroffMom',
-        }
+        },
     },
     requires          => {
         'Moose'           => 0.60,    # hope this one is good enough!

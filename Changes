@@ -1,5 +1,8 @@
 Revision history for Pod-Parser-Groffmom
 
+0.030
+        - Add support for "table of contents"
+
 0.020   28/10/2009
         - Handle E<$number> correctly (but not yet for other languages)
         - Change '=for highlight' to '=begin highlight'

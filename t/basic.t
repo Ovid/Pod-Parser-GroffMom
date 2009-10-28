@@ -115,5 +115,6 @@ This is a paragraph
 
 Test name is Salvador Fandi\N'241'o
 
+.TOC
 END_MOM
 }

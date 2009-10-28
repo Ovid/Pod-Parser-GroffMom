@@ -16,6 +16,8 @@ Curtis "Ovid" Poe
 
 =head1 COVER
 
+=head1 TOC
+
 =head1 This is an attempt to generate a groff_mom file
 
 =head2 This is another subheader
