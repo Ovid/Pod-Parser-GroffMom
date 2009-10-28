@@ -1,5 +1,8 @@
 Revision history for Pod-Parser-Groffmom
 
-0.01    Date/time
-        First version, released on an unsuspecting world.
+0.020
+        - Change '=for highlight' to '=begin highlight'
+
+0.001   27/10/2009
+        - Convert pod to groff -mom format for conversion to PDF.
 

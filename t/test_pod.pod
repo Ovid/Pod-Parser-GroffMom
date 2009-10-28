@@ -45,7 +45,7 @@ This is a paragraph
 
 =head2 Code sample
 
-=for highlight Perl
+=begin highlight Perl
 
  ok my $parser = Pod::Parser::Groffmom->new,
    'We should be able to create a new parser';

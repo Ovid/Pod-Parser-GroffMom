@@ -1,5 +1,19 @@
 package Pod::Parser::Groffmom::Color;
 
+=head1 NAME
+
+Pod::Parser::Groffmom - Color formatting for groff -mom.
+
+=head1 VERSION
+
+Version 0.020
+
+=cut
+
+our $VERSION = '0.020';
+
+$VERSION = eval $VERSION;
+
 use warnings;
 use strict;
 

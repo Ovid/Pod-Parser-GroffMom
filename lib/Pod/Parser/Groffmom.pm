@@ -44,11 +44,11 @@ Pod::Parser::Groffmom - Convert POD to a format groff_mom can handle.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.020
 
 =cut
 
-our $VERSION = '0.001';
+our $VERSION = '0.020';
 $VERSION = eval $VERSION;
 
 sub _trim {
@@ -117,7 +117,7 @@ sub build_mom {
     elsif ( any(qw/over item back/) eq $command ) {
         $self->build_list( $command, $paragraph, $line_num );
     }
-    elsif ( 'for' eq $command ) {
+    elsif ( 'begin' eq $command ) {
         $paragraph = $self->_trim($paragraph);
         my ( $target, $language ) = $paragraph =~ /^(highlight)(?:\s+(\S*))?$/;
         if ( $target && !$language ) {
@@ -376,9 +376,9 @@ C<Pod::Parser::Groffmom> to create a cover page.
 Does not require any text after it.  This is merely a boolean command telling
 C<Pod::Parser::Groffmom> to create page break here.
 
-=item * for highlight
+=item * begin highlight
 
- =for highlight Perl
+ =begin highlight Perl
    
   sub add {
       my ( $self, $data ) = @_;
@@ -392,7 +392,7 @@ This turns on syntax highlighting.  Allowable highlight types are the types
 allowed for C<Syntax::Highlight::Engine::Kate>.  We default to Perl, so the
 above can be written as:
 
- =for highlight 
+ =begin highlight 
    
   sub add {
       my ( $self, $data ) = @_;
