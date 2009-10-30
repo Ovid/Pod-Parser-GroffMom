@@ -5,6 +5,7 @@ use strict;
 use Carp qw(carp croak);
 use Perl6::Junction 'any';
 use Pod::Parser::Groffmom::Color ':all';
+use Pod::Parser::Groffmom::Entities 'entity_to_num';
 
 use Moose;
 use Moose::Util::TypeConstraints 'enum';
@@ -107,13 +108,15 @@ sub build_mom {
     my ( $self, $command, $paragraph, $line_num ) = @_;
     $paragraph = $self->_escape($paragraph);
     if ( 'head1' eq $command ) {
+        $paragraph = $self->interpolate($paragraph);
         $self->add_to_mom(qq{.HEAD "$paragraph"\n\n});
     }
     elsif ( 'head2' eq $command ) {
+        $paragraph = $self->interpolate($paragraph);
         $self->add_to_mom(qq{.SUBHEAD "$paragraph"\n\n});
     }
     elsif ( 'head3' eq $command ) {
-        $self->interpolate($paragraph);
+        $paragraph = $self->interpolate($paragraph);
         $self->add_to_mom(qq{\\f[B]$paragraph\\f[P]\n\n});
     }
     elsif ( any(qw/over item back/) eq $command ) {
@@ -279,7 +282,8 @@ sub interior_sequence {
         return "\\f[B]$paragraph\\f[P]";
     }
     elsif ( $sequence eq 'E' ) {
-        return "\\N'$paragraph'";
+        my $num = entity_to_num($paragraph);
+        return "\\N'$num'";
     }
     else {
         carp(

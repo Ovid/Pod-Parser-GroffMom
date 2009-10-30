@@ -7,6 +7,7 @@ examples/TestClass.pod
 examples/testing_with_test_class.pdf
 lib/Pod/Parser/Groffmom.pm
 lib/Pod/Parser/Groffmom/Color.pm
+lib/Pod/Parser/Groffmom/Entities.pm
 t/00-load.t
 t/basic.t
 t/internals.t
