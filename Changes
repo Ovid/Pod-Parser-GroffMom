@@ -1,6 +1,7 @@
 Revision history for Pod-Parser-Groffmom
 
 0.030
+        - Handle L<> (for now, just quote it).
         - Handle E<$entity_name>.  Codes stolen from HTML::Entities.
         - Interpolate heading correctly.
         - Add support for "table of contents"
