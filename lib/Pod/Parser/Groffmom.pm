@@ -104,37 +104,57 @@ sub parse_mom {
     $self->toc(1)                   if $paragraph eq 'toc';
 }
 
+{
+    my %command_handler = (
+        head1 => sub {
+            my ( $self, $paragraph ) = @_;
+            $paragraph = $self->interpolate($paragraph);
+            $self->add_to_mom(qq{.HEAD "$paragraph"\n\n});
+        },
+        head2 => sub {
+            my ( $self, $paragraph ) = @_;
+            $paragraph = $self->interpolate($paragraph);
+            $self->add_to_mom(qq{.SUBHEAD "$paragraph"\n\n});
+        },
+        head3 => sub {
+            my ( $self, $paragraph ) = @_;
+            $paragraph = $self->interpolate($paragraph);
+            $self->add_to_mom(qq{\\f[B]$paragraph\\f[P]\n\n});
+        },
+        begin => sub {
+            my ( $self, $paragraph ) = @_;
+            $paragraph = $self->_trim($paragraph);
+            my ( $target, $language ) =
+              $paragraph =~ /^(highlight)(?:\s+(\S*))?$/;
+            if ( $target && !$language ) {
+                $language = 'Perl';
+            }
+            $self->highlight( get_highlighter($language) );
+        },
+        end => sub {
+            my ( $self, $paragraph ) = @_;
+            $paragraph = $self->_trim($paragraph);
+            if ( $paragraph eq 'highlight' ) {
+                $self->highlight('');
+            }
+        },
+        pod => sub { },    # noop
+    );
+
+    sub handler_for {
+        my ( $self, $command ) = @_;
+        return $command_handler{$command};
+    }
+}
+
 sub build_mom {
     my ( $self, $command, $paragraph, $line_num ) = @_;
     $paragraph = $self->_escape($paragraph);
-    if ( 'head1' eq $command ) {
-        $paragraph = $self->interpolate($paragraph);
-        $self->add_to_mom(qq{.HEAD "$paragraph"\n\n});
-    }
-    elsif ( 'head2' eq $command ) {
-        $paragraph = $self->interpolate($paragraph);
-        $self->add_to_mom(qq{.SUBHEAD "$paragraph"\n\n});
-    }
-    elsif ( 'head3' eq $command ) {
-        $paragraph = $self->interpolate($paragraph);
-        $self->add_to_mom(qq{\\f[B]$paragraph\\f[P]\n\n});
-    }
-    elsif ( any(qw/over item back/) eq $command ) {
+    if ( any(qw/over item back/) eq $command ) {
         $self->build_list( $command, $paragraph, $line_num );
     }
-    elsif ( 'begin' eq $command ) {
-        $paragraph = $self->_trim($paragraph);
-        my ( $target, $language ) = $paragraph =~ /^(highlight)(?:\s+(\S*))?$/;
-        if ( $target && !$language ) {
-            $language = 'Perl';
-        }
-        $self->highlight( get_highlighter($language) );
-    }
-    elsif ( 'end' eq $command ) {
-        $paragraph = $self->_trim($paragraph);
-        if ( $paragraph eq 'highlight' ) {
-            $self->highlight('');
-        }
+    elsif ( my $handler = $self->handler_for($command) ) {
+        $self->$handler($paragraph);
     }
     else {
         carp("Unknown command ($command) at line $line_num");
@@ -284,6 +304,11 @@ sub interior_sequence {
     elsif ( $sequence eq 'E' ) {
         my $num = entity_to_num($paragraph);
         return "\\N'$num'";
+    }
+    elsif ( $sequence eq 'L' ) {
+
+        # XXX eventually we'll need better handling of this
+        return qq{"$paragraph"};
     }
     else {
         carp(
