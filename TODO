@@ -1,0 +1,5 @@
+* We don't yet handle numbered lists.
+* C<=for...> not handled.
+* Nested lists not yet handled.
+* Handle 'abstract' correctly.
+* Arguments to constructor to override title, subtitle, etc.
