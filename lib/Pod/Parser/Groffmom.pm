@@ -185,6 +185,7 @@ sub build_list {
         }
         $paragraph =~ /^(\*|\d+)?\s*(.*)/;
         my ( $list_type, $item ) = ( $1, $2 );
+        $list_type ||= '';
 
         # default to BULLET if we cannot identify the list type
         $self->list_type( $list_type ne '*' ? 'DIGIT' : 'BULLET' )
@@ -291,24 +292,37 @@ sub add {
 sub interior_sequence {
     my ( $self, $sequence, $paragraph ) = @_;
 
+    # XXX this desperately needs to be a hash
     $paragraph = $self->_trim($paragraph);
-    if ( $sequence eq 'I' ) {
+    if ( $sequence eq 'I' ) { # italics
         return "\\f[I]$paragraph\\f[P]";
     }
-    elsif ( $sequence eq 'C' ) {
+    elsif ( $sequence eq 'C' ) { # code
         return "\\f[C]$paragraph\\f[P]";
     }
-    elsif ( $sequence eq 'B' ) {
+    elsif ( $sequence eq 'B' ) { # bold
         return "\\f[B]$paragraph\\f[P]";
     }
-    elsif ( $sequence eq 'E' ) {
+    elsif ( $sequence eq 'E' ) { # entity
         my $num = entity_to_num($paragraph);
         return "\\N'$num'";
     }
-    elsif ( $sequence eq 'L' ) {
+    elsif ( $sequence eq 'L' ) { # link
 
         # XXX eventually we'll need better handling of this
         return qq{"$paragraph"};
+    }
+    elsif ( $sequence eq 'F' ) { # filename
+        return "\\f[I]$paragraph\\f[P]";
+    }
+    elsif ( $sequence eq 'S' ) { # non-breaking spaces
+        warn "Still researching how to handle S<> sequences";
+    }
+    elsif ( $sequence eq 'Z' ) { # null-effect sequence
+        return '';
+    }
+    elsif ( $sequence eq 'X' ) { # indexes
+        return ''; # XXX would love to do something here
     }
     else {
         carp(
@@ -488,7 +502,9 @@ Probably plenty.
 
 =item * Table to contents are generated at the end. This is a limitation of mom.
 
-=teim * C<=for...> not handled.
+=item * C<=for...> not handled.
+
+=item * Nested lists not yet handled.
 
 =back
 
