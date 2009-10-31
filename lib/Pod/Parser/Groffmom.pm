@@ -500,7 +500,7 @@ Probably plenty.
 
 =item * No C<=head4> or below are supported.
 
-=item * Table to contents are generated at the end. This is a limitation of mom.
+=item * Table of contents are generated at the end. This is a limitation of mom.
 
 =item * C<=for...> not handled.
 
