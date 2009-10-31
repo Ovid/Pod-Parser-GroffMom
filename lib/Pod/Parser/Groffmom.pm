@@ -473,19 +473,19 @@ Probably plenty.
 
 =item * We don't yet handle numbered lists.
 
-=item * Lines of POD starting with a dot '.' character may behave unexpectedly.
+=item * List indent level (C<=over 4>) ignored.
 
-=item * Inline sequences are handled poorly.
+=item * Lines of POD starting with a dot '.' character may behave unexpectedly.
 
 =item * Syntax highlighting is experimental and a bit flaky.
 
-Some lines after comments are highlighted as comments.  Also, POD in verbatim
-(indented) POD highlights incorrectly.  C<Common_Lisp> is allegedly supported
-by C<Syntax::Highlight::Engine::Kate>, but we were getting weird stack errors
-when we tried to highlight it.
+=item * No support for hyperlinks.  C<< L<> >> is rendered with quotes.
 
-Also, don't use angle brackets with quote operators like C<q> or C<qq>.  The
-highlighter gets confused.
+=item * No C<=head4> or below are supported.
+
+=item * Table to contents are generated at the end. This is a limitation of mom.
+
+=teim * C<=for...> not handled.
 
 =back
 
