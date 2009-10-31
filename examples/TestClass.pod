@@ -16,6 +16,8 @@ Curtis "Ovid" Poe
 
 =head1 COVER
 
+=head1 TOC
+
 =head1 Abstract
 
 When working with large test suites, using procedural tests for
@@ -53,7 +55,7 @@ of using C<Moose>), but be aware that you may see slightly different behavior.
 
 Note that C<Moose> packages should I<generally> end with this:
 
-=for highlight 
+=begin highlight 
 
  __PACKAGE__->meta->make_immutable;
  no Moose;
@@ -163,7 +165,7 @@ CPAN.
 
 And the actual test class might start out looking like this:
 
-=for highlight Perl
+=begin highlight Perl
 
  package MyTest::Person;
  
@@ -285,7 +287,7 @@ before any of the other methods run.  The C<1> (one) in the attribute says
 "we're also going to run one test in this method".  If you don't run any tests
 in your C<startup> method, omit this number:
 
-=for highlight Perl
+=begin highlight Perl
 
  sub load_db : Tests(startup) {
      my $test = shift;
@@ -357,7 +359,7 @@ C<Test::Class> method and overriding it will cause our tests to break.
 Our C<Tests> attribute lists the number of tests as '3', but if we don't know
 how many tests we're going to have, we can still use C<no_plan>.
 
-=for highlight Perl
+=begin highlight Perl
 
  sub constructor : Tests(no_plan) { ... }
 
@@ -483,7 +485,7 @@ Let's assume that we want to C<croak> if either the first or last name is not
 set.  To keep this simple, we'll just assume that neither C<first_name> nor
 C<last_name> may be set to a false value.
 
-=for highlight Perl
+=begin highlight Perl
 
  sub full_name {
      my $self = shift;
@@ -538,7 +540,7 @@ how C<Test::Class> really shines by writing a subclass of C<Person> named
 C<Person::Employee>.  We'll keep it simple by only providing an
 C<employee_number> method, but you'll quickly understand the benefits.
 
-=for highlight Perl
+=begin highlight Perl
 
  package Person::Employee;
  
@@ -639,7 +641,7 @@ might expect with object-oriented code, all you need to do is override the
 corresponding test method.  For example, what if employees must have their
 full names listed in the format "last name, first name"?
 
-=for highlight Perl
+=begin highlight Perl
 
  sub full_name {
      my $self = shift;
@@ -943,7 +945,7 @@ I also remove the C<< Test::Class->runtests >> line from C<t/run.t> (or else
 I'll have my tests run twice if I run the full test suite).  Instead, now that
 I have a common base class, I add the following line to C<My::Test::Class>:
 
-=for highlight Perl
+=begin highlight Perl
 
   INIT { Test::Class->runtests }
 
@@ -960,6 +962,8 @@ you'll only see 15 tests run, which is the behavior we wanted.
 
 If you prefer Emacs, you can put the following in your C<~/.emacs> file.
 
+=begin highlight Common Lisp
+
  (eval-after-load "cperl-mode"
      '(add-hook 'cperl-mode-hook
          (lambda () (local-set-key "\C-ct" 'cperl-prove))))
@@ -969,6 +973,8 @@ If you prefer Emacs, you can put the following in your C<~/.emacs> file.
      (interactive)
      (shell-command (concat "prove -lv --merge -It/tests "
          (shell-quote_argument (buffer-file-name)))))
+
+=end highlight
 
 That will bind this to C<C-c t> and you can pretend that you're as cool as
 C<vim> users (just kidding!  Stop the hate mail already).
@@ -1011,7 +1017,7 @@ This method is run after each test method.
 One common function for the C<startup> and C<shutdown> methods is to set up
 and tear down a database:
 
-=for highlight Perl
+=begin highlight Perl
 
  package Tests::My::Resultset::Customer;
  use parent 'My::Test::Class';
@@ -1036,7 +1042,7 @@ called and we disconnect from the database.  Note that if the C<startup>
 method has any tests and one fails, or if it throws any exception, the rest of
 the tests will not be run, but any tests for parent classes will still be run.
 
-=for highlight Perl
+=begin highlight Perl
 
  sub startup : Tests(startup) {
      ok 0;   # the test class will abort here

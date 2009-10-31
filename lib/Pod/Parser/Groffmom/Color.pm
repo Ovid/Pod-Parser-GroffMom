@@ -11,7 +11,6 @@ Version 0.030
 =cut
 
 our $VERSION = '0.030';
-
 $VERSION = eval $VERSION;
 
 use warnings;
@@ -77,3 +76,276 @@ sub get_highlighter {
 }
 
 1;
+
+__END__
+
+=head1 Supported Syntaxes
+
+The following syntaxes are from L<Syntax::Highlight::Engine::Kate>.  See that
+module for a (possibly) more up-to-date list.  Enter these names exactly as
+seen:
+
+ =begin highlight Common Lisp
+
+ (eval-after-load "cperl-mode"
+     '(add-hook 'cperl-mode-hook
+         (lambda () (local-set-key "\C-ct" 'cperl-prove))))
+
+ (defun cperl-prove ()
+     "Run the current test."
+     (interactive)
+     (shell-command (concat "prove -lv --merge -It/tests "
+         (shell-quote_argument (buffer-file-name)))))
+
+ =end highlight
+
+=over 4
+
+=item * "4GL"
+
+=item * "4GL-PER"
+
+=item * "ABC"
+
+=item * "AHDL"
+
+=item * "ANSI C89"
+
+=item * "ASP"
+
+=item * "AVR Assembler"
+
+=item * "AWK"
+
+=item * "Ada"
+
+=item * "Ansys"
+
+=item * "Apache Configuration"
+
+=item * "Asm6502"
+
+=item * "Bash"
+
+=item * "BibTeX"
+
+=item * "C"
+
+=item * "C#"
+
+=item * "C++"
+
+=item * "CGiS"
+
+=item * "CMake"
+
+=item * "CSS"
+
+=item * "CUE Sheet"
+
+=item * "Cg"
+
+=item * "ChangeLog"
+
+=item * "Cisco"
+
+=item * "Clipper"
+
+=item * "ColdFusion"
+
+=item * "Common Lisp"
+
+=item * "Component-Pascal"
+
+=item * "D"
+
+=item * "Debian Changelog"
+
+=item * "Debian Control"
+
+=item * "Diff"
+
+=item * "Doxygen"
+
+=item * "E Language"
+
+=item * "Eiffel"
+
+=item * "Email"
+
+=item * "Euphoria"
+
+=item * "Fortran"
+
+=item * "FreeBASIC"
+
+=item * "GDL"
+
+=item * "GLSL"
+
+=item * "GNU Assembler"
+
+=item * "GNU Gettext"
+
+=item * "HTML"
+
+=item * "Haskell"
+
+=item * "IDL"
+
+=item * "ILERPG"
+
+=item * "INI Files"
+
+=item * "Inform"
+
+=item * "Intel x86 (NASM)"
+
+=item * "JSP"
+
+=item * "Java"
+
+=item * "JavaScript"
+
+=item * "Javadoc"
+
+=item * "KBasic"
+
+=item * "Kate File Template"
+
+=item * "LDIF"
+
+=item * "LPC"
+
+=item * "LaTeX"
+
+=item * "Lex/Flex"
+
+=item * "LilyPond"
+
+=item * "Literate Haskell"
+
+=item * "Lua"
+
+=item * "M3U"
+
+=item * "MAB-DB"
+
+=item * "MIPS Assembler"
+
+=item * "Makefile"
+
+=item * "Mason"
+
+=item * "Matlab"
+
+=item * "Modula-2"
+
+=item * "Music Publisher"
+
+=item * "Octave"
+
+=item * "PHP (HTML)"
+
+=item * "POV-Ray"
+
+=item * "Pascal"
+
+=item * "Perl"
+
+=item * "PicAsm"
+
+=item * "Pike"
+
+=item * "PostScript"
+
+=item * "Prolog"
+
+=item * "PureBasic"
+
+=item * "Python"
+
+=item * "Quake Script"
+
+=item * "R Script"
+
+=item * "REXX"
+
+=item * "RPM Spec"
+
+=item * "RSI IDL"
+
+=item * "RenderMan RIB"
+
+=item * "Ruby"
+
+=item * "SGML"
+
+=item * "SML"
+
+=item * "SQL"
+
+=item * "SQL (MySQL)"
+
+=item * "SQL (PostgreSQL)"
+
+=item * "Sather"
+
+=item * "Scheme"
+
+=item * "Sieve"
+
+=item * "Spice"
+
+=item * "Stata"
+
+=item * "TI Basic"
+
+=item * "TaskJuggler"
+
+=item * "Tcl/Tk"
+
+=item * "UnrealScript"
+
+=item * "VHDL"
+
+=item * "VRML"
+
+=item * "Velocity"
+
+=item * "Verilog"
+
+=item * "WINE Config"
+
+=item * "Wikimedia"
+
+=item * "XML"
+
+=item * "XML (Debug)"
+
+=item * "Yacc/Bison"
+
+=item * "de_DE"
+
+=item * "en_EN"
+
+=item * "ferite"
+
+=item * "nl"
+
+=item * "progress"
+
+=item * "scilab"
+
+=item * "txt2tags"
+
+=item * "x.org Configuration"
+
+=item * "xHarbour"
+
+=item * "xslt"
+
+=item * "yacas"
+
+=back
+

@@ -125,7 +125,7 @@ sub parse_mom {
             my ( $self, $paragraph ) = @_;
             $paragraph = $self->_trim($paragraph);
             my ( $target, $language ) =
-              $paragraph =~ /^(highlight)(?:\s+(\S*))?$/;
+              $paragraph =~ /^(highlight)(?:\s+(.*))?$/;
             if ( $target && !$language ) {
                 $language = 'Perl';
             }
@@ -449,6 +449,9 @@ above can be written as:
   }
 
  =end highlight
+
+For a list of allowable names for syntax highlighting, see
+C<Pod::Parser::Groffmom::Color>.
 
 =back
 
