@@ -427,6 +427,19 @@ above can be written as:
 
 =back
 
+=head1 SPECIAL CHARACTERS
+
+Special characters are often encountered in POD:
+
+ Salvador FandiE<ntilde>o
+
+To see the list of named characters we support, check
+L<Pod::Parser::Groffmom::Entities>.  If the character you need is not on that
+list, you may still enter its numeric value.  The above name could also be
+written as:
+
+ Salvador FandiE<241>o
+
 =head1 LIMITATIONS
 
 Probably plenty.

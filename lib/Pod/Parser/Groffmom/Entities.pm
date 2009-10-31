@@ -11,11 +11,19 @@ Pod::Parser::Groffmom::Entities - Internal entity conversions
 
 Version 0.030
 
+=head1 DESCRIPTION
+
+Most characters can be typed direclty into the POD documents you wish to
+translate, but if you cannot type them, or if processing a document which
+already has them, the following is our conversion list for named entities
+entered into POD as C<EE<lt>entity_nameE<gt>>.
+
+List gleefully stolen from C<HTML::Entities>.
+
 =cut
 
 our $VERSION = '0.030';
 $VERSION = eval $VERSION;
-
 
 use parent 'Exporter';
 our @EXPORT_OK = 'entity_to_num';
@@ -281,7 +289,6 @@ my %entity2char = (
     diams    => 9830,
 );
 
-
 sub entity_to_num {
     my $entity = shift;
     return $entity if $entity =~ /^\d+$/;
@@ -289,3 +296,264 @@ sub entity_to_num {
 }
 
 1;
+
+__END__
+
+=head1 Entities and their names
+
+The following list shows the allowed entity conversions for C<< E<> >>
+entities.
+
+ & => E<amp>
+ > => E<gt>
+ < => E<lt>
+ " => E<quot>
+ ' => E<apos>
+ Æ => E<AElig>
+ Á => E<Aacute>
+ Â => E<Acirc>
+ À => E<Agrave>
+ Å => E<Aring>
+ Ã => E<Atilde>
+ Ä => E<Auml>
+ Ç => E<Ccedil>
+ Ð => E<ETH>
+ É => E<Eacute>
+ Ê => E<Ecirc>
+ È => E<Egrave>
+ Ë => E<Euml>
+ Í => E<Iacute>
+ Î => E<Icirc>
+ Ì => E<Igrave>
+ Ï => E<Iuml>
+ Ñ => E<Ntilde>
+ Ó => E<Oacute>
+ Ô => E<Ocirc>
+ Ò => E<Ograve>
+ Ø => E<Oslash>
+ Õ => E<Otilde>
+ Ö => E<Ouml>
+ Þ => E<THORN>
+ Ú => E<Uacute>
+ Û => E<Ucirc>
+ Ù => E<Ugrave>
+ Ü => E<Uuml>
+ Ý => E<Yacute>
+ á => E<aacute>
+ â => E<acirc>
+ æ => E<aelig>
+ à => E<agrave>
+ å => E<aring>
+ ã => E<atilde>
+ ä => E<auml>
+ ç => E<ccedil>
+ é => E<eacute>
+ ê => E<ecirc>
+ è => E<egrave>
+ ð => E<eth>
+ ë => E<euml>
+ í => E<iacute>
+ î => E<icirc>
+ ì => E<igrave>
+ ï => E<iuml>
+ ñ => E<ntilde>
+ ó => E<oacute>
+ ô => E<ocirc>
+ ò => E<ograve>
+ ø => E<oslash>
+ õ => E<otilde>
+ ö => E<ouml>
+ ß => E<szlig>
+ þ => E<thorn>
+ ú => E<uacute>
+ û => E<ucirc>
+ ù => E<ugrave>
+ ü => E<uuml>
+ ý => E<yacute>
+ ÿ => E<yuml>
+ © => E<copy>
+ ® => E<reg>
+   => E<nbsp>
+ ¡ => E<iexcl>
+ ¢ => E<cent>
+ £ => E<pound>
+ ¤ => E<curren>
+ ¥ => E<yen>
+ ¦ => E<brvbar>
+ § => E<sect>
+ ¨ => E<uml>
+ ª => E<ordf>
+ « => E<laquo>
+ ¬ => E<not>
+ ­ => E<shy>
+ ¯ => E<macr>
+ ° => E<deg>
+ ± => E<plusmn>
+ ¹ => E<sup1>
+ ² => E<sup2>
+ ³ => E<sup3>
+ ´ => E<acute>
+ µ => E<micro>
+ ¶ => E<para>
+ · => E<middot>
+ ¸ => E<cedil>
+ º => E<ordm>
+ » => E<raquo>
+ ¼ => E<frac14>
+ ½ => E<frac12>
+ ¾ => E<frac34>
+ ¿ => E<iquest>
+ × => E<times>
+ ÷ => E<divide>
+ Œ => E<OElig>
+ œ => E<oelig>
+ Š => E<Scaron>
+ š => E<scaron>
+ Ÿ => E<Yuml>
+ ƒ => E<fnof>
+ ˆ => E<circ>
+ ˜ => E<tilde>
+ Α => E<Alpha>
+ Β => E<Beta>
+ Γ => E<Gamma>
+ Δ => E<Delta>
+ Ε => E<Epsilon>
+ Ζ => E<Zeta>
+ Η => E<Eta>
+ Θ => E<Theta>
+ Ι => E<Iota>
+ Κ => E<Kappa>
+ Λ => E<Lambda>
+ Μ => E<Mu>
+ Ν => E<Nu>
+ Ξ => E<Xi>
+ Ο => E<Omicron>
+ Π => E<Pi>
+ Ρ => E<Rho>
+ Σ => E<Sigma>
+ Τ => E<Tau>
+ Υ => E<Upsilon>
+ Φ => E<Phi>
+ Χ => E<Chi>
+ Ψ => E<Psi>
+ Ω => E<Omega>
+ α => E<alpha>
+ β => E<beta>
+ γ => E<gamma>
+ δ => E<delta>
+ ε => E<epsilon>
+ ζ => E<zeta>
+ η => E<eta>
+ θ => E<theta>
+ ι => E<iota>
+ κ => E<kappa>
+ λ => E<lambda>
+ μ => E<mu>
+ ν => E<nu>
+ ξ => E<xi>
+ ο => E<omicron>
+ π => E<pi>
+ ρ => E<rho>
+ ς => E<sigmaf>
+ σ => E<sigma>
+ τ => E<tau>
+ υ => E<upsilon>
+ φ => E<phi>
+ χ => E<chi>
+ ψ => E<psi>
+ ω => E<omega>
+ ϑ => E<thetasym>
+ ϒ => E<upsih>
+ ϖ => E<piv>
+   => E<ensp>
+   => E<emsp>
+   => E<thinsp>
+ ‌ => E<zwnj>
+ ‍ => E<zwj>
+ ‎ => E<lrm>
+ ‏ => E<rlm>
+ – => E<ndash>
+ — => E<mdash>
+ ‘ => E<lsquo>
+ ’ => E<rsquo>
+ ‚ => E<sbquo>
+ “ => E<ldquo>
+ ” => E<rdquo>
+ „ => E<bdquo>
+ † => E<dagger>
+ ‡ => E<Dagger>
+ • => E<bull>
+ … => E<hellip>
+ ‰ => E<permil>
+ ′ => E<prime>
+ ″ => E<Prime>
+ ‹ => E<lsaquo>
+ › => E<rsaquo>
+ ‾ => E<oline>
+ ⁄ => E<frasl>
+ € => E<euro>
+ ℑ => E<image>
+ ℘ => E<weierp>
+ ℜ => E<real>
+ ™ => E<trade>
+ ℵ => E<alefsym>
+ ← => E<larr>
+ ↑ => E<uarr>
+ → => E<rarr>
+ ↓ => E<darr>
+ ↔ => E<harr>
+ ↵ => E<crarr>
+ ⇐ => E<lArr>
+ ⇑ => E<uArr>
+ ⇒ => E<rArr>
+ ⇓ => E<dArr>
+ ⇔ => E<hArr>
+ ∀ => E<forall>
+ ∂ => E<part>
+ ∃ => E<exist>
+ ∅ => E<empty>
+ ∇ => E<nabla>
+ ∈ => E<isin>
+ ∉ => E<notin>
+ ∋ => E<ni>
+ ∏ => E<prod>
+ ∑ => E<sum>
+ − => E<minus>
+ ∗ => E<lowast>
+ √ => E<radic>
+ ∝ => E<prop>
+ ∞ => E<infin>
+ ∠ => E<ang>
+ ∧ => E<and>
+ ∨ => E<or>
+ ∩ => E<cap>
+ ∪ => E<cup>
+ ∫ => E<int>
+ ∴ => E<there4>
+ ∼ => E<sim>
+ ≅ => E<cong>
+ ≈ => E<asymp>
+ ≠ => E<ne>
+ ≡ => E<equiv>
+ ≤ => E<le>
+ ≥ => E<ge>
+ ⊂ => E<sub>
+ ⊃ => E<sup>
+ ⊄ => E<nsub>
+ ⊆ => E<sube>
+ ⊇ => E<supe>
+ ⊕ => E<oplus>
+ ⊗ => E<otimes>
+ ⊥ => E<perp>
+ ⋅ => E<sdot>
+ ⌈ => E<lceil>
+ ⌉ => E<rceil>
+ ⌊ => E<lfloor>
+ ⌋ => E<rfloor>
+ 〈 => E<lang>
+ 〉 => E<rang>
+ ◊ => E<loz>
+ ♠ => E<spades>
+ ♣ => E<clubs>
+ ♥ => E<hearts>
+ ♦ => E<diams>

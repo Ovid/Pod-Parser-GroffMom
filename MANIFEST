@@ -10,6 +10,7 @@ lib/Pod/Parser/Groffmom/Color.pm
 lib/Pod/Parser/Groffmom/Entities.pm
 t/00-load.t
 t/basic.t
+t/entities.t
 t/internals.t
 t/test_pod.pod
 xt/pod-coverage.t
