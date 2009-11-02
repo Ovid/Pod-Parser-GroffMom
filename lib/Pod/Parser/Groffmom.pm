@@ -511,13 +511,13 @@ Probably plenty.
 
 =over 4
 
-=item * We don't yet handle numbered lists.
+=item * We don't yet handle numbered lists well (they always start with '1')
 
 =item * List indent level (C<=over 4>) ignored.
 
 =item * Lines of POD starting with a dot '.' character may behave unexpectedly.
 
-=item * Syntax highlighting is experimental and a bit flaky.
+=item * Syntax highlighting is experimental.
 
 =item * No support for hyperlinks.  C<< L<> >> is rendered with quotes.
 
@@ -526,8 +526,6 @@ Probably plenty.
 =item * Table of contents are generated at the end. This is a limitation of mom.
 
 =item * C<=for...> not handled.
-
-=item * Nested lists not yet handled.
 
 =back
 

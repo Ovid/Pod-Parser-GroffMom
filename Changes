@@ -1,6 +1,8 @@
 Revision history for Pod-Parser-Groffmom
 
 0.030
+        - Numbered lists sort of work (must always start with '1', but we'll
+          fix that later.
         - Add support for nested lists.
         - Add previously unhandled sequences (e.g., S<>, Z<>).
         - Handle L<> (for now, just quote it).
