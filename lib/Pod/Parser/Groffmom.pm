@@ -27,9 +27,20 @@ has toc => ( is => 'rw', => isa => 'Bool' );
 has highlight => ( is => 'rw' );
 
 # list helpers
-has list_data => ( is => 'rw', isa => 'Str', default => '' );
-has in_list_mode => ( is => 'rw', isa => 'Bool' );
-has list_type => ( is => 'rw', isa => enum( [qw/BULLET DIGIT/] ) );
+has in_list_mode => ( is => 'rw', isa => 'Int', default => 0 );
+has list_data    => ( is => 'rw', isa => 'Str', default => '' );
+has list_type => ( is => 'rw', isa => enum( [ '', qw/BULLET DIGIT/ ] ) );
+
+sub new {
+    my $class = shift;
+    my $self = $class->SUPER::new(@_);
+    # XXX debug this later.  Why aren't the defaults defaulting?  Do these not
+    # work when inheriting from non-Moose objects?
+    $self->in_list_mode(0);
+    $self->list_data('');
+    $self->mom('');
+    return $self;
+}
 
 sub mom_methods  { @MOM_METHODS }
 sub mom_booleans { @MOM_BOOLEANS }
@@ -164,17 +175,26 @@ sub build_mom {
 sub build_list {
     my ( $self, $command, $paragraph, $line_num ) = @_;
     if ( 'over' eq $command ) {
-        $self->in_list_mode(1);
+        $self->in_list_mode( $self->in_list_mode + 1 );
+        $self->list_type('');
     }
     elsif ( 'back' eq $command ) {
-        my $list =
-            ".L_MARGIN 1.25i\n.LIST "
-          . $self->list_type . "\n"
-          . $self->list_data
-          . ".LIST END\n\n.L_MARGIN 1i\n";
-        $self->add_to_mom($list);
-        $self->list_data('');
-        $self->in_list_mode(0);
+        if ( $self->in_list_mode == 0 ) {
+            warn "=back without =over at line $line_num";
+            return;
+        }
+        else {
+            $self->in_list_mode( $self->in_list_mode - 1 );
+            $self->list_data( $self->list_data . ".LIST END\n" );
+        }
+        if ( !$self->in_list_mode ) {
+            my $list =
+                ".L_MARGIN 1.25i\n"
+              . $self->list_data
+              . "\n.L_MARGIN 1i\n";
+            $self->add_to_mom($list);
+            $self->list_data('');
+        }
     }
     elsif ( 'item' eq $command ) {
         if ( not $self->in_list_mode ) {
@@ -186,10 +206,13 @@ sub build_list {
         $paragraph =~ /^(\*|\d+)?\s*(.*)/;
         my ( $list_type, $item ) = ( $1, $2 );
         $list_type ||= '';
+        $list_type = '*' ne $list_type ? 'DIGIT' : 'BULLET';
 
         # default to BULLET if we cannot identify the list type
-        $self->list_type( $list_type ne '*' ? 'DIGIT' : 'BULLET' )
-          if not $self->list_type;
+        if ( not $self->list_type ) {
+            $self->list_type($list_type);
+            $self->list_data( $self->list_data . ".LIST $list_type\n" );
+        }
         $item = $self->interpolate($item);
         $self->add_to_list(".ITEM\n$item\n");
     }
@@ -198,14 +221,14 @@ sub build_list {
 sub add_to_mom {
     my ( $self, $text ) = @_;
     return unless defined $text;
-    $self->mom( ( $self->mom || '' ) . $text );
+    $self->mom( ( $self->mom ) . $text );
 }
 
 sub add_to_list {
     my ( $self, $text ) = @_;
     return unless defined $text;
     $text = $self->interpolate($text);
-    $self->list_data( ( $self->list_data || '' ) . $text );
+    $self->list_data( ( $self->list_data ) . $text );
 }
 
 sub end_input {
@@ -563,5 +586,8 @@ This program is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
 =cut
+
+no Moose;
+__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
 1;    # End of Pod::Parser::Groffmom
