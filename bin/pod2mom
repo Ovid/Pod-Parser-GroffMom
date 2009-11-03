@@ -14,7 +14,7 @@ my %opts = map { $_ => undef } qw/
   mom_author
   mom_copyright
   mom_cover
-  toc
+  mom_toc
   /;
 
 GetOptions(
@@ -23,7 +23,7 @@ GetOptions(
     "author=s"    => \$opts{mom_author},
     "copyright=s" => \$opts{mom_copyright},
     "cover"       => \$opts{mom_cover},
-    "toc"         => \$opts{toc},
+    "toc"         => \$opts{mom_toc},
     "stdtoc"      => \my $stdtoc,
     "ps!"         => \my $make_ps,
 );
@@ -53,7 +53,7 @@ my $command = "groff -mom > $ps $mom";
 print $command, $/;
 system($command) == 0 or die $?;
 
-if ( $opts{toc} && !$stdtoc ) {
+if ( $opts{mom_toc} && !$stdtoc ) {
     # XXX yeah, I know this is a really, really nasty hack, rewriting the
     # postscript on the fly, but mom does not support tables of contents
     # except at the end of the document.
@@ -115,6 +115,8 @@ Boolean options:
  --stdtoc       "mom" standard table of contents page (at end of document)
  --ps           Create a Postscript file (requires groff in your path)
  --nops         Don't create a Postscript file
+
+=for mom newpage
 
 Options that take arguments:
 

@@ -50,9 +50,15 @@ sub mom_methods  { @MOM_METHODS }
 sub mom_booleans { @MOM_BOOLEANS }
 
 sub is_mom {
-    my ( $class, $command ) = @_;
-    return 1 if $command eq 'NAME';    # special alias for 'TITLE'
-    return $IS_MOM{$command};
+    my ( $class, $command, $paragraph ) = @_;
+    $DB::single = 1;
+    if ( $command =~ /^head[123]/ ) {
+        return 1 if $paragraph eq 'NAME';    # special alias for 'TITLE'
+        return $IS_MOM{$paragraph};
+    }
+    elsif ( $command eq 'for' ) {
+        return 1 if $paragraph =~ /^mom\s+\w+/;
+    }
 }
 
 =head1 NAME
@@ -97,7 +103,7 @@ sub command {
     $self->$_(0) foreach $self->mom_methods;
     $paragraph = $self->_trim($paragraph);
 
-    my $is_mom = $self->is_mom($paragraph);
+    my $is_mom = $self->is_mom($command, $paragraph);
     $paragraph = lc $paragraph if $is_mom;
     if ($is_mom) {
         $self->parse_mom( $command, $paragraph, $line_num );
@@ -122,9 +128,9 @@ sub parse_mom {
             return;
         }
     }
-    $self->mom_cover(1)             if $paragraph eq 'cover';
-    $self->add_to_mom(".NEWPAGE\n") if $paragraph eq 'newpage';
-    $self->toc(1)                   if $paragraph eq 'toc';
+    $self->mom_cover(1)             if $paragraph =~ /^mom\s+cover/i;
+    $self->mom_toc(1)               if $paragraph =~ /^mom\s+toc/i;
+    $self->add_to_mom(".NEWPAGE\n") if $paragraph =~ /^mom\s+newpage/i;
 }
 
 {
@@ -276,7 +282,7 @@ $color_definitions
 .START
 END
     $self->mom( $mom .= $self->mom );
-    $self->mom( $self->mom . ".TOC\n" ) if $self->toc;
+    $self->mom( $self->mom . ".TOC\n" ) if $self->mom_toc;
 }
 
 sub verbatim {
@@ -439,6 +445,8 @@ If you have printed the "mom" output to file named 'my.mom', you can then do thi
 And you will have a postscript file suitable for opening in C<gv>, Apple's
 C<Preview.app> or anything else which can read postscript files.
 
+If you prefer, read C<perldoc pod2mom> for an easier interface.
+
 =head1 DESCRIPTION
 
 This subclass of C<Pod::Parser> will take a POD file and produce "mom"
@@ -452,6 +460,27 @@ L<http://www.opensource.apple.com/source/groff/groff-28/groff/contrib/mom/momdoc
 The "mom" documentation is not needed to use this module, but it would be
 needed if you wish to hack on it.
 
+=head1 CONSTRUCTOR
+
+The following arguments may be supplied to the constructor and override any
+values found in the POD document.
+
+=over 4
+
+=item * C<mom_title>
+
+=item * C<mom_subtitle>
+
+=item * C<mom_author>
+
+=item * C<mom_copyright>
+
+=item * C<mom_cover> (creates a cover page)
+
+=item * C<mom_toc> (creates a table of contents)
+
+=back
+
 =head1 ALPHA CODE
 
 This is alpha code.  There's not much control over it yet and there are plenty
@@ -463,6 +492,9 @@ Most POD files will convert directly to "mom" output.  However, when you view
 the result, you might want more control over it.  The following is how
 MOM directives are handled.  They may begin with either '=head1' or =head2'.
 It doesn't matter (this might change later).
+
+Some commands which should alter mom behavior but not show up in the POD begin
+with C<=for>.
 
 =over 4
 
@@ -507,21 +539,21 @@ document if the C<=head1 COVER> command is given.
 
 =item * COVER
 
- =head1 COVER
+ =for mom COVER
 
 Does not require any text after it.  This is merely a boolean command telling
 C<Pod::Parser::Groffmom> to create a cover page.
 
-=item * NEWPAGE
+=item * newpage
 
- =head1 NEWPAGE
+ =for mom newpage
 
 Does not require any text after it.  This is merely a boolean command telling
 C<Pod::Parser::Groffmom> to create page break here.
 
 =item * TOC
 
- =head1 TOC
+ =for mom TOC
 
 Does not require any text after it.  This is merely a boolean command telling
 C<Pod::Parser::Groffmom> to create a table of contents.  Due to limitations in

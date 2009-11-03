@@ -1,8 +1,11 @@
 Revision history for Pod-Parser-Groffmom
 
-0.030
+0.030   03/11/2009
+        - Switch 'cover', 'toc' and 'newpage' to =for commands so as not to
+          break standard POD.
+        - Add pod2mom script.
         - Numbered lists sort of work (must always start with '1', but we'll
-          fix that later.
+          fix that later).
         - Add support for nested lists.
         - Add previously unhandled sequences (e.g., S<>, Z<>).
         - Handle L<> as per "perldoc perlpod".
@@ -11,7 +14,7 @@ Revision history for Pod-Parser-Groffmom
         - Add support for "table of contents"
 
 0.020   28/10/2009
-        - Handle E<$number> correctly (but not yet for other languages)
+        - Handle E<$number> correctly.
         - Change '=for highlight' to '=begin highlight'
 
 0.001   27/10/2009

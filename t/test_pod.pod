@@ -14,9 +14,9 @@ Curtis "Ovid" Poe
 
 2009, Some company
 
-=head1 COVER
+=for mom COVER
 
-=head1 TOC
+=for mom TOC
 
 =head1 This is an attempt to generate a groff_mom file
 
@@ -34,7 +34,7 @@ We want POD text to I<automatically> be converted to the correct format.
 
 =item * Second item
 
-=head1 NEWPAGE
+=for mom NEWPAGE
 
 =head2 Verbatim sample
 
