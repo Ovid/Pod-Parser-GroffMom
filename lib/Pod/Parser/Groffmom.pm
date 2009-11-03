@@ -8,8 +8,9 @@ use Pod::Parser::Groffmom::Color ':all';
 use Pod::Parser::Groffmom::Entities 'entity_to_num';
 
 use Moose;
+use MooseX::NonMoose;
 use Moose::Util::TypeConstraints 'enum';
-extends qw(Pod::Parser Moose::Object);
+extends qw(Pod::Parser);
 
 # order of MOM_METHODS is very important.  See '.COPYRIGHT' in mom docs.
 my @MOM_METHODS  = qw(title subtitle author copyright);
@@ -30,17 +31,6 @@ has highlight => ( is => 'rw' );
 has in_list_mode => ( is => 'rw', isa => 'Int', default => 0 );
 has list_data    => ( is => 'rw', isa => 'Str', default => '' );
 has list_type => ( is => 'rw', isa => enum( [ '', qw/BULLET DIGIT/ ] ) );
-
-sub new {
-    my $class = shift;
-    my $self = $class->SUPER::new(@_);
-    # XXX debug this later.  Why aren't the defaults defaulting?  Do these not
-    # work when inheriting from non-Moose objects?
-    $self->in_list_mode(0);
-    $self->list_data('');
-    $self->mom('');
-    return $self;
-}
 
 sub mom_methods  { @MOM_METHODS }
 sub mom_booleans { @MOM_BOOLEANS }
@@ -334,8 +324,36 @@ sub add {
         L => sub {    # link
             my ( $self, $paragraph ) = @_;
 
-            # XXX eventually we'll need better handling of this
-            return qq{"$paragraph"};
+            # This is legal because the POD docs are quite specific about this.
+            my $strip_quotes = sub { $_[0] =~ s/^"|"$//g };
+
+            if ( $paragraph !~ m{(?:/|\|)} ) { # no / or |
+                # L<Net::Ping>
+                return "\\f[C]$paragraph\\f[P]";
+            }
+            elsif ( $paragraph =~ m{^([^/]*)\|(.+)$} ) {
+                # L<the Net::Ping module|Net::Ping>
+                # L<support section|PPI/SUPPORT>
+                my ($text, $name) = ( $1, $2 );
+
+                $strip_quotes->($_) foreach $text, $name;
+                if ($name eq $text) {
+                    return "\\f[C]$text\\f[P]";
+                }
+                else {
+                    return qq{$text (\\f[C]$name\\f[P])};
+                }
+            }
+            elsif ( $paragraph =~ m{^(.*)/(.*)} ) {
+                my ( $name, $text ) = ( $1, $2 );
+                $strip_quotes->($_) foreach $text, $name;
+                return "$text (\\f[C]$name\\f[P])";
+            }
+            else {
+                # XXX eventually we'll need better handling of this
+                warn "Unknown sequence format for L<$paragraph>";
+                return qq{"$paragraph"};
+            }
         },
         F => sub {    # filename
             my ( $self, $paragraph ) = @_;
@@ -363,9 +381,6 @@ sub add {
 
 sub interior_sequence {
     my ( $self, $sequence, $paragraph ) = @_;
-
-    # XXX this desperately needs to be a hash
-    $paragraph = $self->_trim($paragraph);
     if ( my $handler = $self->sequence_handler($sequence) ) {
         return $self->$handler($paragraph);
     }
