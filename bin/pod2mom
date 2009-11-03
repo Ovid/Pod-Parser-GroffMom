@@ -116,8 +116,6 @@ Boolean options:
  --ps           Create a Postscript file (requires groff in your path)
  --nops         Don't create a Postscript file
 
-=for mom newpage
-
 Options that take arguments:
 
  --title        Title of document
@@ -136,6 +134,8 @@ document.  If you specify C<--toc> and not C<--stdtoc>, we attempt to rewrite
 the Postscript document on the fly to reposition the table of contents.  If
 Postscript generation is not requested, C<--toc> and C<--stdtoc> are the same
 (the Table of Contents is at the end of the document).
+
+=for mom newpage
 
 =head1 SEE ALSO
 
