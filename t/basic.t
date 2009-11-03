@@ -15,7 +15,7 @@ can_ok $parser, 'parse_from_filehandle';
 warning_like { $parser->parse_from_filehandle($fh) }
     qr/^Found \Q(=item * Second item)\E outside of list at line \d+/,
     '... and it should parse the file with a warning a bad =item';
-is $parser->mom, get_mom(),
+eq_or_diff $parser->mom, get_mom(),
     '... and it should render the correct mom';
 
 sub get_mom {
@@ -54,7 +54,7 @@ sub get_mom {
 
 .SUBHEAD "This is another subheader"
 
-We want POD text to \f[I]automatically\f[P] be converted to the correct format.
+We want POD text to \f[I]automatically\f[P] be converted to the correct format\N'46'
 
 .L_MARGIN 1.25i
 .LIST BULLET
@@ -72,7 +72,7 @@ Second item
 .PT_SIZE 10
 .LEFT
 .L_MARGIN 1.25i
- If at first you don't succeed ...
+ If at first you don't succeed \N'46'\N'46'\N'46'
  :wq
 .QUAD
 .L_MARGIN 1i

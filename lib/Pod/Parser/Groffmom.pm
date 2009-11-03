@@ -67,6 +67,12 @@ sub _escape {
     # This is a quick and nasty hack, but we assume that we escape all
     # backslashes unless they look like they're followed by a mom escape
     $text =~ s/\\(?!\[\w+\])/\\\\/g;
+
+    # We need to do this list dots appear at the beginning of a line an look
+    # like mom macros.  This can happen if you have a some inline sequences
+    # terminating a sentence (e.g. "See the module S<C<Foo::Module>>.").
+    $text =~ s/\./\\N'46'/g;
+
     return $text;
 }
 
@@ -361,7 +367,8 @@ sub add {
         },
         S => sub {    # non-breaking spaces
             my ( $self, $paragraph ) = @_;
-            warn "Still researching how to handle S<> sequences";
+            $paragraph =~ s/\s/\\~/g; # non-breaking space
+            return " \\c\n.HYPHENATE OFF\n$paragraph\\c\n.HYPHENATE\n";
         },
         Z => sub {    # null-effect sequence
             my ( $self, $paragraph ) = @_;

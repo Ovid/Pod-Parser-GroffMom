@@ -60,7 +60,7 @@ This is some text with
     END
     my $expected = <<'    END';
 This is some text with
-  an embedded \f[C]code\f[P] block.
+  an embedded \f[C]code\f[P] block\N'46'
 
     END
     can_ok $parser, 'textblock';

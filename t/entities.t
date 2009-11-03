@@ -31,6 +31,8 @@ L<perlsyn/"For Loops">
 
 L<perlsyn/For Loops>
 
+This is a line which breaks.  I recommend you look at Salvador FandiE<ntilde>o's S<Language::Prolog::Yaswi>.
+
 END
 
 $parser->parse_from_filehandle($fh);
@@ -49,12 +51,19 @@ the Net::Ping module (\f[C]Net::Ping\f[P])
 
 support section (\f[C]PPI/SUPPORT\f[P])
 
- (\f[C]http://www.example.com\f[P])
+ (\f[C]http://www\N'46'example\N'46'com\f[P])
 
 \[dq]For Loops\[dq] (\f[C]perlsyn\f[P])
 
 For Loops (\f[C]perlsyn\f[P])
 
+This is a line which breaks\N'46'  I recommend you look at Salvador Fandi\N'241'o's  \c
+.HYPHENATE OFF
+Language::Prolog::Yaswi\c
+.HYPHENATE
+\N'46'
+
 END
+
 eq_or_diff body($parser->mom), $expected_body,
     '... and L<> seqeunces should be parsed correctly';
