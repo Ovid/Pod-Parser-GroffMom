@@ -376,7 +376,9 @@ sub add {
         },
         X => sub {    # indexes
             my ( $self, $paragraph ) = @_;
-            return '';    # XXX would love to do something here
+            return $paragraph;
+            # XXX Rats.  Didn't work.
+            # return "$paragraph\\c\n.IQ $paragraph\\c\n";    # XXX would love to do something here
         },
     );
 
@@ -559,8 +561,6 @@ Probably plenty.
 
 =item * List indent level (C<=over 4>) ignored.
 
-=item * Lines of POD starting with a dot '.' character may behave unexpectedly.
-
 =item * Syntax highlighting is experimental.
 
 =item * No support for hyperlinks.  C<< L<> >> is rendered with quotes.
@@ -570,6 +570,8 @@ Probably plenty.
 =item * Table of contents are generated at the end. This is a limitation of mom.
 
 =item * C<=for...> not handled.
+
+=item * C<SE<lt>E<gt>> sequences try to work but they're finicky.
 
 =back
 

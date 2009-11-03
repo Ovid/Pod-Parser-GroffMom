@@ -60,7 +60,7 @@ This article will focus on C<AI::Prolog>.  Prolog, though not a "pure" logic
 programming language, is the most widely used in the field.  C<AI::Prolog> is a
 Prolog engine written entirely in Perl and it's very easy to install and use.
 However, if you start doing serious work in Prolog, I strongly recommend you
-take a look at Salvador FandiE<241>o's C<S<Language::Prolog::Yaswi>>.  This module
+take a look at Salvador FandiE<241>o's S<C<Language::Prolog::Yaswi>>.  This module
 allows access to SWI-Prolog (http://www.swi-prolog.org/) from within Perl.
 It's more difficult to compile and get running, but it's faster and much more
 powerful.  Luke Palmer's new C<Logic> distribution takes a somewhat different
