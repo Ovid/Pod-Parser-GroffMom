@@ -5,7 +5,7 @@ Revision history for Pod-Parser-Groffmom
           fix that later.
         - Add support for nested lists.
         - Add previously unhandled sequences (e.g., S<>, Z<>).
-        - Handle L<> (for now, just quote it).
+        - Handle L<> as per "perldoc perlpod".
         - Handle E<$entity_name>.  Codes stolen from HTML::Entities.
         - Interpolate heading correctly.
         - Add support for "table of contents"
