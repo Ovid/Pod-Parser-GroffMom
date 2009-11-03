@@ -53,7 +53,11 @@ my $command = "groff -mom > $ps $mom";
 print $command, $/;
 system($command) == 0 or die $?;
 
-if ( not $stdtoc ) {
+if ( $opts{toc} && !$stdtoc ) {
+    # XXX yeah, I know this is a really, really nasty hack, rewriting the
+    # postscript on the fly, but mom does not support tables of contents
+    # except at the end of the document.
+
     open $fh, '<', $ps or die "Cannot open ($ps) for reading: $!";
     my $postscript = do { local $/; <$fh> };    # can be expensive!
     close $fh;
@@ -133,6 +137,10 @@ Postscript generation is not requested, C<--toc> and C<--stdtoc> are the same
 
 =head1 SEE ALSO
 
-L<Pod::Parser::Groffmom>
+=over 4
 
-C<groff_mom>
+=item * L<Pod::Parser::Groffmom>
+
+=item * C<man groff_mom>
+
+=back

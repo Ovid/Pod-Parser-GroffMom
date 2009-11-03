@@ -22,6 +22,7 @@ my $builder = Module::Build->new(
         'Test::More' => 0.94,
     },
     add_to_cleanup     => ['Pod-Parser-Groffmom-*'],
+    script_files       => ["bin/pod2mom"],
     create_makefile_pl => 'traditional',
 );
 

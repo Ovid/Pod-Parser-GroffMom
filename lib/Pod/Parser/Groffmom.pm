@@ -17,10 +17,24 @@ my @MOM_METHODS  = qw(title subtitle author copyright);
 my @MOM_BOOLEANS = qw(cover newpage toc);
 my %IS_MOM       = map { uc($_) => 1 } ( @MOM_METHODS, @MOM_BOOLEANS );
 
-foreach my $method ( @MOM_METHODS, @MOM_BOOLEANS ) {
-    has $method       => ( is => 'rw', isa => 'Bool' );
-    has "mom_$method" => ( is => 'rw', isa => 'Str' );
+foreach my $method ( __PACKAGE__->mom_methods, __PACKAGE__->mom_booleans ) {
+    has $method                       => ( is => 'rw', isa => 'Bool' );
+    has "mom_$method"                 => ( is => 'rw', isa => 'Str' );
+    has "$method\_set_in_constructor" => ( is => 'rw', isa => 'Bool' );
 }
+
+sub BUILD {
+    my $self = shift;
+    foreach my $method ( __PACKAGE__->mom_methods, __PACKAGE__->mom_booleans )
+    {
+        my $mom = "mom_$method";
+        my $ctr = "$method\_set_in_constructor";
+        if ( $self->$mom ) {
+            $self->$ctr(1);
+        }
+    }
+}
+
 has head    => ( is => 'rw' );
 has subhead => ( is => 'rw' );
 has mom     => ( is => 'rw', isa => 'Str', default => '' );
@@ -98,9 +112,11 @@ sub parse_mom {
     $paragraph = 'title' if $paragraph eq 'name';
     foreach my $method ( $self->mom_methods ) {
         my $mom_method = "mom_$method";
+        my $ctr        = "$method\_set_in_constructor";
         if ( $paragraph eq $method ) {
             if ( my $item = $self->$mom_method ) {
-                croak("Tried to reset $method ($item) at line $line_num");
+                croak("Tried to reset $method ($item) at line $line_num")
+                    unless $self->$ctr;
             }
             $self->$method(1);
             return;
@@ -292,10 +308,15 @@ sub textblock {
     $textblock = $self->interpolate( $textblock, $line_num );
     foreach my $method ( $self->mom_methods ) {
         my $mom_method = "mom_$method";
+        my $ctr        = "$method\_set_in_constructor";
+
         if ( $self->$method ) {
 
-            # This was set in command()
-            $self->$mom_method($textblock);
+            # Don't override these values if set in the contructor
+            if ( not $self->$ctr ) {
+                # This was set in command()
+                $self->$mom_method($textblock);
+            }
             return;
         }
     }
