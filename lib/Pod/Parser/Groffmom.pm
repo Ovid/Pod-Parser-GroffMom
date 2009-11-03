@@ -312,40 +312,62 @@ sub add {
     $self->$add($data);
 }
 
+{
+    my %handler_for = (
+        I => sub {    # italics
+            my ( $self, $paragraph ) = @_;
+            return "\\f[I]$paragraph\\f[P]";
+        },
+        C => sub {    # code
+            my ( $self, $paragraph ) = @_;
+            return "\\f[C]$paragraph\\f[P]";
+        },
+        B => sub {    # bold
+            my ( $self, $paragraph ) = @_;
+            return "\\f[B]$paragraph\\f[P]";
+        },
+        E => sub {    # entity
+            my ( $self, $paragraph ) = @_;
+            my $num = entity_to_num($paragraph);
+            return "\\N'$num'";
+        },
+        L => sub {    # link
+            my ( $self, $paragraph ) = @_;
+
+            # XXX eventually we'll need better handling of this
+            return qq{"$paragraph"};
+        },
+        F => sub {    # filename
+            my ( $self, $paragraph ) = @_;
+            return "\\f[I]$paragraph\\f[P]";
+        },
+        S => sub {    # non-breaking spaces
+            my ( $self, $paragraph ) = @_;
+            warn "Still researching how to handle S<> sequences";
+        },
+        Z => sub {    # null-effect sequence
+            my ( $self, $paragraph ) = @_;
+            return '';
+        },
+        X => sub {    # indexes
+            my ( $self, $paragraph ) = @_;
+            return '';    # XXX would love to do something here
+        },
+    );
+
+    sub sequence_handler {
+        my ( $self, $sequence ) = @_;
+        return $handler_for{$sequence};
+    }
+}
+
 sub interior_sequence {
     my ( $self, $sequence, $paragraph ) = @_;
 
     # XXX this desperately needs to be a hash
     $paragraph = $self->_trim($paragraph);
-    if ( $sequence eq 'I' ) { # italics
-        return "\\f[I]$paragraph\\f[P]";
-    }
-    elsif ( $sequence eq 'C' ) { # code
-        return "\\f[C]$paragraph\\f[P]";
-    }
-    elsif ( $sequence eq 'B' ) { # bold
-        return "\\f[B]$paragraph\\f[P]";
-    }
-    elsif ( $sequence eq 'E' ) { # entity
-        my $num = entity_to_num($paragraph);
-        return "\\N'$num'";
-    }
-    elsif ( $sequence eq 'L' ) { # link
-
-        # XXX eventually we'll need better handling of this
-        return qq{"$paragraph"};
-    }
-    elsif ( $sequence eq 'F' ) { # filename
-        return "\\f[I]$paragraph\\f[P]";
-    }
-    elsif ( $sequence eq 'S' ) { # non-breaking spaces
-        warn "Still researching how to handle S<> sequences";
-    }
-    elsif ( $sequence eq 'Z' ) { # null-effect sequence
-        return '';
-    }
-    elsif ( $sequence eq 'X' ) { # indexes
-        return ''; # XXX would love to do something here
+    if ( my $handler = $self->sequence_handler($sequence) ) {
+        return $self->$handler($paragraph);
     }
     else {
         carp(
