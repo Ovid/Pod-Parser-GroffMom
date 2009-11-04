@@ -6,7 +6,6 @@ use warnings;
 use lib 'lib';
 
 use Getopt::Long;
-use Pod::Parser::Groffmom;
 
 my %opts = map { $_ => undef } qw/
   mom_title
@@ -25,8 +24,15 @@ GetOptions(
     "cover"       => \$opts{mom_cover},
     "toc"         => \$opts{mom_toc},
     "stdtoc"      => \my $stdtoc,
+    "parser=s"    => \my $parse_class,
     "ps!"         => \my $make_ps,
 );
+
+$parse_class ||= 'Pod::Parser::Groffmom';
+eval "use $parse_class";
+if ( my $error = $@ ) {
+    die "Could not use ($parse_class): $error";
+}
 
 foreach my $key ( keys %opts ) {
     delete $opts{$key} unless defined $opts{$key};
@@ -39,7 +45,7 @@ unless ( $mom =~ s/\.\w$/.mom/ ) {
     $mom = "$mom.mom";
 }
 
-my $parser = Pod::Parser::Groffmom->new( \%opts );
+my $parser = $parse_class->new( \%opts );
 open my $fh, '<', $file or die "Cannot open ($file) for reading: $!";
 $parser->parse_from_filehandle($fh);
 open my $out, '>', $mom or die "$!";
@@ -150,6 +156,7 @@ Options that take arguments:
  --subtitle     Subtitle of document
  --copyright    Copyright info (only displayed with --cover)
  --author       Author of document
+ --parser       Alternate parser to use (subclass from Pod::Parser::Groffmom)
 
 This script turns a standard POD file into a "mom" document.  If the C<--ps>
 option is present, attempts to create a Postscript document with the same name
