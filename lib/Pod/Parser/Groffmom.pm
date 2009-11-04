@@ -52,6 +52,7 @@ has subhead => ( is => 'rw' );
 has mom     => ( is => 'rw', isa => 'Str', default => '' );
 has toc => ( is => 'rw', => isa => 'Bool' );
 has highlight => ( is => 'rw' );
+has last_title => ( is => 'rw', isa => 'Str' );
 
 # list helpers
 has in_list_mode => ( is => 'rw', isa => 'Int', default => 0 );
@@ -170,16 +171,19 @@ sub parse_mom {
             my ( $self, $paragraph ) = @_;
             $paragraph = $self->interpolate($paragraph);
             $self->add_to_mom(qq{.HEAD "$paragraph"\n\n});
+            $self->last_title($paragraph);
         },
         head2 => sub {
             my ( $self, $paragraph ) = @_;
             $paragraph = $self->interpolate($paragraph);
             $self->add_to_mom(qq{.SUBHEAD "$paragraph"\n\n});
+            $self->last_title($paragraph);
         },
         head3 => sub {
             my ( $self, $paragraph ) = @_;
             $paragraph = $self->interpolate($paragraph);
             $self->add_to_mom(qq{\\f[B]$paragraph\\f[P]\n\n});
+            $self->last_title($paragraph);
         },
         begin => sub {
             my ( $self, $paragraph ) = @_;
