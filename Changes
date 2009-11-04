@@ -1,6 +1,9 @@
 Revision history for Pod-Parser-Groffmom
 
 0.031
+        - Reformat paragraphs to be on a single line (this stops problems when
+          the newline break causes something to be recognized as a command to
+          mom).
         - Handle one level of nested sequences: C<< I<alias>=I<name> >>
         - Fix pod2mom bug where it wouldn't correctly find TOC's greater than
           one page.

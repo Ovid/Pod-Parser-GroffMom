@@ -14,9 +14,9 @@ Curtis "Ovid" Poe
 
 2006, Curtis "Ovid" Poe
 
-=head1 COVER
+=for mom cover
 
-=head1 TOC
+=for mom toc
 
 =head2 Introduction
 
@@ -228,7 +228,7 @@ command line:
 
  $ aiprolog gives.pro
 
-=head1 NEWPAGE
+=for mom newpage
 
 Alternately, you can I<consult> the file from the shell:
  
@@ -357,7 +357,7 @@ following knowledge base:
  male(tom)
  male(tim)
 
-=head1 NEWPAGE
+=for mom newpage
 
 Now let's assume we have a rule that states that someone is a father if they
 are a parent and they are male.
@@ -449,7 +449,7 @@ being the functor and subsequent arguments being the values.  If any value is a
 list, it will be represented as an array reference.  We'll see more on that
 later as we cover lists.
 
-=head1 NEWPAGE
+=for mom newpage
 
 Now let's see the full program:
 
@@ -490,7 +490,7 @@ If you run this program, it will quite happily print out "father bill" and
 "father tom."  In fact, if you really want to see what's going on internally,
 after you issue the query you can "trace" the execution:
 
-=head1 NEWPAGE
+=for mom newpage
 
  $prolog->query('father(Who)');
  $prolog->trace(1); # after the query, before the results
@@ -791,7 +791,7 @@ Again this fails so Prolog tries again and we succeed:
 
   member(3, [3|4]).
 
-=head1 NEWPAGE
+=for mom newpage
 
 So how do we see if Alice has cats?
 
@@ -981,7 +981,7 @@ module (to this author's knowledge) is currently ready for widespread use.  The
 C<AI::Prolog> distribution has a number of sample programs in the C<examples/>
 directory and two complete, albeit small, games in the C<data/> directory.
 
-=head1 NEWPAGE
+=for mom newpage
 
 =head1 References
 
@@ -1030,7 +1030,7 @@ of these two applications, but it has evolved in a much different direction.
 
 =back
 
-=head1 NEWPAGE
+=for mom newpage
 
 =head2 Books
 
@@ -1053,7 +1053,7 @@ programming, second-order logic, grammars, and many working examples.
 
 =back
 
-=head1 NEWPAGE
+=for mom newpage
 
 =head1 Credits
 

@@ -319,6 +319,10 @@ END
 
 sub textblock {
     my ( $self, $textblock, $paragraph, $line_num ) = @_;
+
+    # newlines can lead to strange things happening the new text on the next
+    # line is interpreted as a command to mom.
+    $textblock =~ s/\n/ /g;
     $textblock = $self->_escape( $self->_trim($textblock) );
     $textblock = $self->interpolate( $textblock, $line_num );
     foreach my $method ( $self->mom_methods ) {
