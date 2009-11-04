@@ -1,6 +1,7 @@
 Revision history for Pod-Parser-Groffmom
 
 0.031
+        - Add '=for mom tofile $filename'.
         - Reformat paragraphs to be on a single line (this stops problems when
           the newline break causes something to be recognized as a command to
           mom).
