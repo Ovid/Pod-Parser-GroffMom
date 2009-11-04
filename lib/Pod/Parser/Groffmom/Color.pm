@@ -36,7 +36,7 @@ sub color_definitions {
 .NEWCOLOR Function     RGB #007f00
 .NEWCOLOR IString      RGB #ff0000
 .NEWCOLOR Operator     RGB #ffa500
-.NEWCOLOR Others       RGB #b03160
+.NEWCOLOR Others       RGB #b03060
 .NEWCOLOR RegionMarker RGB #96b9ff
 .NEWCOLOR Reserved     RGB #9b30ff
 .NEWCOLOR String       RGB #ff0000
