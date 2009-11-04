@@ -3,7 +3,6 @@ Build.PL
 Changes
 lib/Pod/Parser/Groffmom.pm
 lib/Pod/Parser/Groffmom/Color.pm
-lib/Pod/Parser/Groffmom/Color.ps
 lib/Pod/Parser/Groffmom/Entities.pm
 Makefile.PL
 MANIFEST
