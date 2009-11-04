@@ -1,5 +1,9 @@
 Revision history for Pod-Parser-Groffmom
 
+0.031
+        - Fix the Pod::Parser::Groffmom::Entities pod in an attempt to make
+          them render clearly on the CPAN.
+
 0.030   03/11/2009
         - Switch 'cover', 'toc' and 'newpage' to =for commands so as not to
           break standard POD.
