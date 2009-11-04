@@ -345,78 +345,137 @@ sub add {
 }
 
 {
+    sub get_open_close_formats {
+        my ( $self, $pod_seq, $format_code ) = @_;
+        my $parent_format = $self->get_parent_format_code($pod_seq);
+        my $open
+          = $parent_format
+          ? "\\f[P]\\f[${parent_format}$format_code]"
+          : "\\f[$format_code]";
+        my $close
+          = $parent_format
+          ? "\\f[P]\\f[$parent_format]"
+          : "\\f[P]";
+        return ( $open, $close );
+    }
     my %handler_for = (
-        I => sub {    # italics
-            my ( $self, $paragraph ) = @_;
-            return "\\f[I]$paragraph\\f[P]";
+        I => {
+            format_code => 'I',
+            handler     => sub {    # italics
+                my ( $self, $paragraph, $pod_seq ) = @_;
+                my ( $open, $close )
+                  = $self->get_open_close_formats( $pod_seq, 'I' );
+                return "$open$paragraph$close";
+            },
+          },
+        C => {
+            format_code => 'C',
+            handler     => sub {    # code
+                my ( $self, $paragraph, $pod_seq ) = @_;
+                my ( $open, $close ) = $self->get_open_close_formats($pod_seq, 'C');
+                return "$open$paragraph$close";
+              }
         },
-        C => sub {    # code
-            my ( $self, $paragraph ) = @_;
-            return "\\f[C]$paragraph\\f[P]";
+        B => {
+            format_code => 'B',
+            handler     => sub {    # bold
+                my ( $self, $paragraph, $pod_seq ) = @_;
+                my ( $open, $close ) = $self->get_open_close_formats($pod_seq, 'B');
+                return "$open$paragraph$close";
+              }
         },
-        B => sub {    # bold
-            my ( $self, $paragraph ) = @_;
-            return "\\f[B]$paragraph\\f[P]";
+        E => {
+            format_code => '',
+            handler     => sub {    # entity
+                my ( $self, $paragraph, $pod_seq ) = @_;
+                my $num = entity_to_num($paragraph);
+                return "\\N'$num'";
+              }
         },
-        E => sub {    # entity
-            my ( $self, $paragraph ) = @_;
-            my $num = entity_to_num($paragraph);
-            return "\\N'$num'";
-        },
-        L => sub {    # link
-            my ( $self, $paragraph ) = @_;
+        L => {
+            format_code => '',
+            handler     => sub {    # link
+                my ( $self, $paragraph, $pod_seq ) = @_;
 
-            # This is legal because the POD docs are quite specific about this.
-            my $strip_quotes = sub { $_[0] =~ s/^"|"$//g };
+               # This is legal because the POD docs are quite specific about this.
+                my $strip_quotes = sub { $_[0] =~ s/^"|"$//g };
 
-            if ( $paragraph !~ m{(?:/|\|)} ) { # no / or |
-                # L<Net::Ping>
-                return "\\f[C]$paragraph\\f[P]";
-            }
-            elsif ( $paragraph =~ m{^([^/]*)\|(.+)$} ) {
-                # L<the Net::Ping module|Net::Ping>
-                # L<support section|PPI/SUPPORT>
-                my ($text, $name) = ( $1, $2 );
+                if ( $paragraph !~ m{(?:/|\|)} ) {    # no / or |
+                                                      # L<Net::Ping>
+                    return "\\f[C]$paragraph\\f[P]";
+                }
+                elsif ( $paragraph =~ m{^([^/]*)\|(.+)$} ) {
 
-                $strip_quotes->($_) foreach $text, $name;
-                if ($name eq $text) {
-                    return "\\f[C]$text\\f[P]";
+                    # L<the Net::Ping module|Net::Ping>
+                    # L<support section|PPI/SUPPORT>
+                    my ( $text, $name ) = ( $1, $2 );
+
+                    $strip_quotes->($_) foreach $text, $name;
+                    if ( $name eq $text ) {
+                        return "\\f[C]$text\\f[P]";
+                    }
+                    else {
+                        return qq{$text (\\f[C]$name\\f[P])};
+                    }
+                }
+                elsif ( $paragraph =~ m{^(.*)/(.*)} ) {
+                    my ( $name, $text ) = ( $1, $2 );
+                    $strip_quotes->($_) foreach $text, $name;
+                    return "$text (\\f[C]$name\\f[P])";
                 }
                 else {
-                    return qq{$text (\\f[C]$name\\f[P])};
+
+                    # XXX eventually we'll need better handling of this
+                    warn "Unknown sequence format for L<$paragraph>";
+                    return qq{"$paragraph"};
                 }
-            }
-            elsif ( $paragraph =~ m{^(.*)/(.*)} ) {
-                my ( $name, $text ) = ( $1, $2 );
-                $strip_quotes->($_) foreach $text, $name;
-                return "$text (\\f[C]$name\\f[P])";
-            }
-            else {
-                # XXX eventually we'll need better handling of this
-                warn "Unknown sequence format for L<$paragraph>";
-                return qq{"$paragraph"};
-            }
+              }
         },
-        F => sub {    # filename
-            my ( $self, $paragraph ) = @_;
-            return "\\f[I]$paragraph\\f[P]";
+        F => {
+            format_code => 'I',
+            handler     => sub {    # filename
+                my ( $self, $paragraph, $pod_seq ) = @_;
+                my ( $open, $close ) = $self->get_open_close_formats($pod_seq, 'I');
+                return "$open$paragraph$close";
+              }
         },
-        S => sub {    # non-breaking spaces
-            my ( $self, $paragraph ) = @_;
-            $paragraph =~ s/\s/\\~/g; # non-breaking space
-            return " \\c\n.HYPHENATE OFF\n$paragraph\\c\n.HYPHENATE\n";
+        S => {
+            format_code => '',
+            handler     => sub {    # non-breaking spaces
+                my ( $self, $paragraph, $pod_seq ) = @_;
+                $paragraph =~ s/\s/\\~/g;    # non-breaking space
+                return " \\c\n.HYPHENATE OFF\n$paragraph\\c\n.HYPHENATE\n";
+              }
         },
-        Z => sub {    # null-effect sequence
-            my ( $self, $paragraph ) = @_;
-            return '';
+        Z => {
+            format_code => '',
+            handler     => sub {             # null-effect sequence
+                my ( $self, $paragraph, $pod_seq ) = @_;
+                return '';
+              }
         },
-        X => sub {    # indexes
-            my ( $self, $paragraph ) = @_;
-            return $paragraph;
-            # XXX Rats.  Didn't work.
-            # return "$paragraph\\c\n.IQ $paragraph\\c\n";    # XXX would love to do something here
+        X => {
+            format_code => '',
+            handler     => sub {             # indexes
+                my ( $self, $paragraph, $pod_seq ) = @_;
+                return $paragraph;
+
+                # XXX Rats.  Didn't work. mom doesn't do indexing
+                # return "$paragraph\\c\n.IQ $paragraph\\c\n";
+              }
         },
     );
+
+    sub get_parent_format_code {
+        my ( $self, $pod_seq ) = @_;
+
+        # note that we only handle one level of nesting.  This should change
+        # in the future.
+        return '' unless $pod_seq;
+        my $parent = $pod_seq->nested or return '';
+        no warnings 'uninitialized';
+        return $handler_for{$parent->name}{format_code} || '';
+    }
 
     sub sequence_handler {
         my ( $self, $sequence ) = @_;
@@ -425,9 +484,10 @@ sub add {
 }
 
 sub interior_sequence {
-    my ( $self, $sequence, $paragraph ) = @_;
+    my ( $self, $sequence, $paragraph, $pod_seq ) = @_;
     if ( my $handler = $self->sequence_handler($sequence) ) {
-        return $self->$handler($paragraph);
+        $handler = $handler->{handler};
+        return $self->$handler($paragraph, $pod_seq);
     }
     else {
         carp(

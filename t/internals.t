@@ -37,16 +37,22 @@ subtest 'escape' => sub {
 
 subtest 'interior sequences' => sub {
     plan tests => 6;
+    my $seq = Pod::InteriorSequence->new(
+        -name   => 'unknown',
+        -ldelim => '<'
+    );
     can_ok $parser, 'interior_sequence';
 
-    is $parser->interior_sequence( 'I', 'italics' ),
+    is $parser->interior_sequence( 'I', 'italics', $seq ),
       '\\f[I]italics\\f[P]', '... and it should render italics correctly';
-    is $parser->interior_sequence( 'B', 'bold' ),
+    is $parser->interior_sequence( 'B', 'bold', $seq ),
       '\\f[B]bold\\f[P]', '... and it should render bold correctly';
-    is $parser->interior_sequence( 'C', 'code' ),
+    is $parser->interior_sequence( 'C', 'code', $seq ),
       '\\f[C]code\\f[P]', '... and it should render code correctly';
     my $result;
-    warning_like { $result = $parser->interior_sequence( '?', 'unknown' ) }
+    warning_like {
+        $result = $parser->interior_sequence( '?', 'unknown', $seq );
+    }
     qr/^Unknown sequence \Q(?<unknown>)\E/,
       'Unknown sequences should warn correctly';
     is $result, 'unknown', '... but still return the sequence interior';

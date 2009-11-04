@@ -1,6 +1,7 @@
 Revision history for Pod-Parser-Groffmom
 
 0.031
+        - Handle one level of nested sequences: C<< I<alias>=I<name> >>
         - Fix pod2mom bug where it wouldn't correctly find TOC's greater than
           one page.
         - Fix the Pod::Parser::Groffmom::Entities pod in an attempt to make

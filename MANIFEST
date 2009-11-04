@@ -12,6 +12,9 @@ t/00-load.t
 t/basic.t
 t/entities.t
 t/internals.t
+t/lib/MyTest/PPG.pm
+t/nested_list.t
+t/sequences.t
 t/test_pod.pod
 xt/pod-coverage.t
 xt/pod.t
