@@ -75,12 +75,17 @@ sub is_mom {
         if ( $paragraph =~ /^mom\s+(?:newpage|toc|cover)/i ) {
             return 1;
         }
-        elsif ( $paragraph =~ /^mom\s+tofile\s+(.*?)\s*$/i ) {
+        elsif ( $paragraph =~ /^mom\s+tofile(?:\s+(.*?))?\s*$/i ) {
             my $file = $1;
             open my $fh, '>>', $file
               or croak("Could not open ($file) for appending: $!");
             $self->fh($fh);
-            $self->file_name($file);
+            if ( $file ) {
+                $self->file_name($file);
+            }
+            elsif ( not $self->file_name ) {
+                croak("'=for mom tofile' found but filename not set");
+            }
         }
     }
     elsif ( $command eq 'end' ) {
@@ -88,7 +93,6 @@ sub is_mom {
             my $file = $self->file_name;
             close $self->fh or croak("Could not close ($file): $!");
             $self->fh(undef);
-            $self->file_name('');
         }
     }
 }
@@ -318,10 +322,17 @@ END
     $self->mom( $self->mom . ".TOC\n" ) if $self->mom_toc;
 }
 
+sub add_to_file {
+    my ( $self, $data ) = @_;
+    my $fh = $self->fh 
+        or croak("No filehandle found");
+    print $fh $data;
+}
+
 sub verbatim {
     my ( $self, $verbatim, $paragraph, $line_num ) = @_;
     if ( my $fh = $self->fh ) {
-        print $fh $verbatim;
+        $self->add_to_file($verbatim);
         return;
     }
     $verbatim =~ s/\s+$//s;
@@ -349,7 +360,7 @@ sub textblock {
     my ( $self, $textblock, $paragraph, $line_num ) = @_;
 
     if ( my $fh = $self->fh ) {
-        print $fh $textblock;
+        $self->add_to_file($textblock);
         return;
     }
 
@@ -717,10 +728,14 @@ talk.
 Any paragraph or verbatim text included between these tokens are automatically
 sent to the C<$filename> specified in C<=for mom tofile $filename>.  The file
 is opened in I<append> mode, so any text found will be added to what is
-already there.  The text is passed "as is".  If you must pass pod, the leading
-'=' sign will cause this text to be handled by L<Pod::Parser::Groffmom>
-instead of being passed to your file.  Thus, any leading '=' must be escaped
-in the format you need it in:
+already there.  The text is passed "as is".  If the filename has been
+specified in a previous C<=for mom tofile> command, you don't need to state it
+again unless you're sending the output to a different file.  Stating the
+filename again is a no-op.
+
+If you must pass pod, the leading '=' sign will cause this text to be handled
+by L<Pod::Parser::Groffmom> instead of being passed to your file.  Thus, any
+leading '=' must be escaped in the format you need it in:
 
  =for mom tofile tmp/some.html
 
