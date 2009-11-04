@@ -1,6 +1,8 @@
 Revision history for Pod-Parser-Groffmom
 
 0.031
+        - Fix pod2mom bug where it wouldn't correctly find TOC's greater than
+          one page.
         - Fix the Pod::Parser::Groffmom::Entities pod in an attempt to make
           them render clearly on the CPAN.
 

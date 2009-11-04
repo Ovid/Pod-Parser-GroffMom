@@ -18,19 +18,30 @@ my @MOM_BOOLEANS = qw(cover newpage toc);
 my %IS_MOM       = map { uc($_) => 1 } ( @MOM_METHODS, @MOM_BOOLEANS );
 
 foreach my $method ( __PACKAGE__->mom_methods, __PACKAGE__->mom_booleans ) {
-    has $method                       => ( is => 'rw', isa => 'Bool' );
-    has "mom_$method"                 => ( is => 'rw', isa => 'Str' );
+
+    # did we find this thing in the POD?
+    has $method => ( is => 'rw', isa => 'Bool' );
+
+    # let's set the actual value to what we found
+    has "mom_$method" => ( is => 'rw', isa => 'Str' );
+
+    # it was set in the contructor
     has "$method\_set_in_constructor" => ( is => 'rw', isa => 'Bool' );
+}
+
+# This is an embarrasing, nasty hack.
+sub get_mom_and_ctr_methods {
+    my ( $class, $method ) = @_;
+    return ( "mom_$method", "$method\_set_in_constructor" );
 }
 
 sub BUILD {
     my $self = shift;
     foreach my $method ( __PACKAGE__->mom_methods, __PACKAGE__->mom_booleans )
     {
-        my $mom = "mom_$method";
-        my $ctr = "$method\_set_in_constructor";
+        my ($mom, $set_in_contructor) = $self->get_mom_and_ctr_methods($method);
         if ( $self->$mom ) {
-            $self->$ctr(1);
+            $self->$set_in_contructor(1);
         }
     }
 }
@@ -51,7 +62,6 @@ sub mom_booleans { @MOM_BOOLEANS }
 
 sub is_mom {
     my ( $class, $command, $paragraph ) = @_;
-    $DB::single = 1;
     if ( $command =~ /^head[123]/ ) {
         return 1 if $paragraph eq 'NAME';    # special alias for 'TITLE'
         return $IS_MOM{$paragraph};
@@ -117,12 +127,11 @@ sub parse_mom {
     my ( $self, $command, $paragraph, $line_num ) = @_;
     $paragraph = 'title' if $paragraph eq 'name';
     foreach my $method ( $self->mom_methods ) {
-        my $mom_method = "mom_$method";
-        my $ctr        = "$method\_set_in_constructor";
+        my ( $mom, $set_in_contructor ) = $self->get_mom_and_ctr_methods($method);
         if ( $paragraph eq $method ) {
-            if ( my $item = $self->$mom_method ) {
+            if ( my $item = $self->$mom ) {
                 croak("Tried to reset $method ($item) at line $line_num")
-                    unless $self->$ctr;
+                    unless $self->$set_in_contructor;
             }
             $self->$method(1);
             return;
@@ -313,15 +322,15 @@ sub textblock {
     $textblock = $self->_escape( $self->_trim($textblock) );
     $textblock = $self->interpolate( $textblock, $line_num );
     foreach my $method ( $self->mom_methods ) {
-        my $mom_method = "mom_$method";
-        my $ctr        = "$method\_set_in_constructor";
+        my ( $mom, $set_in_contructor ) =
+        $self->get_mom_and_ctr_methods($method);
 
         if ( $self->$method ) {
 
             # Don't override these values if set in the contructor
-            if ( not $self->$ctr ) {
+            if ( not $self->$set_in_contructor ) {
                 # This was set in command()
-                $self->$mom_method($textblock);
+                $self->$mom($textblock);
             }
             return;
         }
