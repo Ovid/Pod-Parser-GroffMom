@@ -290,7 +290,15 @@ sub add_to_list {
     my ( $self, $text ) = @_;
     return unless defined $text;
     $text = $self->interpolate($text);
-    $self->list_data( ( $self->list_data ) . $text );
+
+    # This horror of horrors is because we want simple lists to be single
+    # spaced, unless there are further details after the =item line, in which
+    # case an extra newline is needed for pleasant formatting.
+    my $break = '';
+    if ( $self->list_data =~ /\n.ITEM\n.*\n$/ && $text !~ /^.ITEM/ ) {
+        $break = "\n";
+    }
+    $self->list_data( ( $self->list_data ) . "$break$text" );
 }
 
 sub end_input {
