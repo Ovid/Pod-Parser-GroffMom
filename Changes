@@ -1,6 +1,9 @@
 Revision history for Pod-Parser-Groffmom
 
 0.031
+        - Improve list formatting by allowing extra space if we have a
+          non-item after =item (e.g., when lists have descriptions of list
+          items).
         - Allow pod2mom to take an alternate parser.
         - Add 'last_title' method. Useful for subclasses.
         - Add '=for mom tofile $filename'.

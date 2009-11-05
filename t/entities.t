@@ -8,9 +8,7 @@ use MyTest::PPG ':all';
 use Test::Most 'no_plan'; #tests => 1;
 use Pod::Parser::Groffmom;
 
-my $parser = Pod::Parser::Groffmom->new;
-
-open my $fh, '<', \<<'END' or die $!;
+my $pod = <<'END';
 =head1 NAME
 
 E<ntilde> eq E<241>
@@ -35,8 +33,8 @@ This is a line which breaks.  I recommend you look at Salvador FandiE<ntilde>o's
 
 END
 
-$parser->parse_from_filehandle($fh);
-is head( $parser->mom, 1 ), q{.TITLE "\\N'241' eq \\N'241'"},
+my $mom = get_mom($pod);
+is head( $mom, 1 ), q{.TITLE "\\N'241' eq \\N'241'"},
   'E<> sequences should be parsed correctly';
 
 my $expected_body = <<'END';
@@ -65,5 +63,5 @@ Language::Prolog::Yaswi\c
 
 END
 
-eq_or_diff body($parser->mom), $expected_body,
+eq_or_diff body($mom), $expected_body,
     '... and L<> seqeunces should be parsed correctly';

@@ -8,9 +8,7 @@ use MyTest::PPG ':all';
 use Test::Most 'no_plan'; #tests => 1;
 use Pod::Parser::Groffmom;
 
-my $parser = Pod::Parser::Groffmom->new;
-
-open my $fh, '<', \<<'END' or die $!;
+my $pod = <<'END';
 =head1 Nested sequences
 
 C<< <I<alias>=I<rulename>> >>
@@ -25,7 +23,5 @@ my $expected_body = <<'END';
 
 END
 
-# was: \f[C]<\f[I]alias\f[P]=\f[I]rulename\f[P]>\f[P]
-$parser->parse_from_filehandle($fh);
-eq_or_diff body($parser->mom), $expected_body,
-    'Nested seqeunces should group codes correctly';
+eq_or_diff body(get_mom($pod)), $expected_body,
+    'Nested sequences should group codes correctly';

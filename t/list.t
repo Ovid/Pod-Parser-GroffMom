@@ -3,12 +3,72 @@
 use strict;
 use warnings;
 
-use Test::Most tests => 1;
+use Test::Most 'no_plan';    #tests => 1;
+use lib 't/lib';
+use MyTest::PPG ':all';
 use Pod::Parser::Groffmom;
 
-my $parser = Pod::Parser::Groffmom->new;
+my $pod = <<'END';
+=over 4
 
-open my $fh, '<', \<<'END' or die $!;
+=item 1 one
+
+=item 2 two
+
+=back
+END
+
+my $expected = <<'END';
+
+.L_MARGIN 1.25i
+.LIST DIGIT
+.ITEM
+one
+.ITEM
+two
+.LIST END
+
+.L_MARGIN 1i
+END
+eq_or_diff body( get_mom($pod) ), $expected,
+  'Simple lists should parse correctly';
+
+$pod = <<'END';
+=over 4
+
+=item 1 one
+
+'one' is un
+
+=item 2 two
+
+'two' is deux
+
+=back
+END
+
+$expected = <<'END';
+
+.L_MARGIN 1.25i
+.LIST DIGIT
+.ITEM
+one
+
+'one' is un
+
+.ITEM
+two
+
+'two' is deux
+
+.LIST END
+
+.L_MARGIN 1i
+END
+eq_or_diff body( get_mom($pod) ), $expected,
+  '... as should lists with item entries';
+
+$pod = <<'END';
 =head1 NAME
 
 Nested Lists
@@ -37,9 +97,8 @@ Nested Lists
 
 END
 
-$parser->parse_from_filehandle($fh);
 my $expected_mom = do { local $/; <DATA> };
-eq_or_diff $parser->mom, $expected_mom, 'Nested lists should parse correctly';
+eq_or_diff get_mom($pod), $expected_mom, 'Nested lists should parse correctly';
 
 __END__
 .TITLE "Nested Lists"

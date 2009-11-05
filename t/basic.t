@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::Most tests => 4;
+
 use Pod::Parser::Groffmom;
 
 ok my $parser = Pod::Parser::Groffmom->new,
