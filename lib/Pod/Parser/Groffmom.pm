@@ -27,6 +27,9 @@ foreach my $method ( __PACKAGE__->mom_methods, __PACKAGE__->mom_booleans ) {
 
     # it was set in the contructor
     has "$method\_set_in_constructor" => ( is => 'rw', isa => 'Bool' );
+
+    # Also store them in plain text in case people need 'em
+    has "original_$method" => ( is => 'rw', isa => 'Str' );
 }
 
 # This is an embarrasing, nasty hack.
@@ -41,7 +44,9 @@ sub BUILD {
     {
         my ( $mom, $set_in_contructor )
           = $self->get_mom_and_ctr_methods($method);
-        if ( $self->$mom ) {
+        if ( my $value = $self->$mom ) {
+            my $orig = "original_$method";
+            $self->$orig($value);
             $self->$set_in_contructor(1);
         }
     }
@@ -76,12 +81,13 @@ sub is_mom {
             return 1;
         }
         elsif ( $paragraph =~ /^mom\s+tofile(?:\s+(.*?))?\s*$/i ) {
-            my $file = $1;
-            open my $fh, '>>', $file
-              or croak("Could not open ($file) for appending: $!");
-            $self->fh($fh);
-            if ( $file ) {
+            if ( my $file = $1 ) {
+                open my $fh, '>>', $file
+                  or croak("Could not open ($file) for appending: $!");
+                close $self->fh if $self->fh;
+                $self->fh($fh);
                 $self->file_name($file);
+                return 1;
             }
             elsif ( not $self->file_name ) {
                 croak("'=for mom tofile' found but filename not set");
@@ -91,8 +97,8 @@ sub is_mom {
     elsif ( $command eq 'end' ) {
         if ( $paragraph =~ /^mom\s+tofile\s*/i ) {
             my $file = $self->file_name;
-            close $self->fh or croak("Could not close ($file): $!");
             $self->fh(undef);
+            return 1;
         }
     }
 }
@@ -173,21 +179,21 @@ sub parse_mom {
     my %command_handler = (
         head1 => sub {
             my ( $self, $paragraph ) = @_;
+            $self->last_title($paragraph);
             $paragraph = $self->interpolate($paragraph);
             $self->add_to_mom(qq{.HEAD "$paragraph"\n\n});
-            $self->last_title($paragraph);
         },
         head2 => sub {
             my ( $self, $paragraph ) = @_;
+            $self->last_title($paragraph);
             $paragraph = $self->interpolate($paragraph);
             $self->add_to_mom(qq{.SUBHEAD "$paragraph"\n\n});
-            $self->last_title($paragraph);
         },
         head3 => sub {
             my ( $self, $paragraph ) = @_;
             $paragraph = $self->interpolate($paragraph);
-            $self->add_to_mom(qq{\\f[B]$paragraph\\f[P]\n\n});
             $self->last_title($paragraph);
+            $self->add_to_mom(qq{\\f[B]$paragraph\\f[P]\n\n});
         },
         begin => sub {
             my ( $self, $paragraph ) = @_;
@@ -199,6 +205,7 @@ sub parse_mom {
             }
             $self->highlight( get_highlighter($language) );
         },
+        for => sub {},   # XXX refactor!
         end => sub {
             my ( $self, $paragraph ) = @_;
             $paragraph = $self->_trim($paragraph);
@@ -225,7 +232,7 @@ sub build_mom {
         $self->$handler($paragraph);
     }
     else {
-        carp("Unknown command ($command) at line $line_num");
+        carp("Unknown command (=$command $paragraph) at line $line_num");
     }
 }
 
@@ -324,8 +331,8 @@ END
 
 sub add_to_file {
     my ( $self, $data ) = @_;
-    my $fh = $self->fh 
-        or croak("No filehandle found");
+    my $fh = $self->fh
+      or croak("No filehandle found");
     print $fh $data;
 }
 
@@ -364,6 +371,8 @@ sub textblock {
         return;
     }
 
+    my $original_textblock = $textblock;
+
     # newlines can lead to strange things happening the new text on the next
     # line is interpreted as a command to mom.
     $textblock =~ s/\n/ /g;
@@ -377,6 +386,9 @@ sub textblock {
 
             # Don't override these values if set in the contructor
             if ( not $self->$set_in_contructor ) {
+
+                my $orig = "original_$method";
+                $self->$orig($original_textblock);
 
                 # This was set in command()
                 $self->$mom($textblock);
