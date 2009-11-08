@@ -56,8 +56,9 @@ has head    => ( is => 'rw' );
 has subhead => ( is => 'rw' );
 has mom     => ( is => 'rw', isa => 'Str', default => '' );
 has toc => ( is => 'rw', => isa => 'Bool' );
-has highlight => ( is => 'rw' );
-has last_title => ( is => 'rw', isa => 'Str' );
+has highlight    => ( is => 'rw' );
+has last_title   => ( is => 'rw', isa => 'Str' );
+has in_file_mode => ( is => 'ro', isa => 'Bool', default => 0, writer => 'set_in_file_mode' );
 
 # list helpers
 has in_list_mode => ( is => 'rw', isa => 'Int', default => 0 );
@@ -78,26 +79,6 @@ sub is_mom {
     }
     elsif ( $command eq 'for' ) {
         if ( $paragraph =~ /^mom\s+(?:newpage|toc|cover)/i ) {
-            return 1;
-        }
-        elsif ( $paragraph =~ /^mom\s+tofile(?:\s+(.*?))?\s*$/i ) {
-            if ( my $file = $1 ) {
-                open my $fh, '>>', $file
-                  or croak("Could not open ($file) for appending: $!");
-                close $self->fh if $self->fh;
-                $self->fh($fh);
-                $self->file_name($file);
-                return 1;
-            }
-            elsif ( not $self->file_name ) {
-                croak("'=for mom tofile' found but filename not set");
-            }
-        }
-    }
-    elsif ( $command eq 'end' ) {
-        if ( $paragraph =~ /^mom\s+tofile\s*/i ) {
-            my $file = $self->file_name;
-            $self->fh(undef);
             return 1;
         }
     }
@@ -133,7 +114,13 @@ sub _escape {
     # We need to do this list dots appear at the beginning of a line an look
     # like mom macros.  This can happen if you have a some inline sequences
     # terminating a sentence (e.g. "See the module S<C<Foo::Module>>.").
-    $text =~ s/\./\\N'46'/g;
+    $text =~ s/^\./\\N'46'/;
+    $text =~ s/\n\./\n\\N'46'/g;
+
+    # cheap attempt to combat issue with some inline sequences ending a
+    # sentence and forcing a linebreak with the final period on a line by
+    # itself.
+    $text =~ s/([[:upper:]]<+[^>]*>+)\./$1\\N'46'/g;
 
     return $text;
 }
@@ -195,22 +182,46 @@ sub parse_mom {
             $self->last_title($paragraph);
             $self->add_to_mom(qq{\\f[B]$paragraph\\f[P]\n\n});
         },
+        for => sub {
+            my ( $self, $paragraph ) = @_;
+            if ( $paragraph =~ /^mom\s+tofile\s+(.*?)\s*$/i ) {
+                if ( my $file = $1 ) {
+                    if ( -f $file ) {
+                        unlink $file or croak("Could not unlink($file): $!");
+                    }
+                    open my $fh, '>>', $file
+                      or croak("Could not open ($file) for appending: $!");
+                    close $self->fh if $self->fh;
+                    $self->fh($fh);
+                    $self->file_name($file);
+                }
+                elsif ( not $self->file_name ) {
+                    croak("'=for mom tofile' found but filename not set");
+                }
+            }
+        },
         begin => sub {
             my ( $self, $paragraph ) = @_;
             $paragraph = $self->_trim($paragraph);
-            my ( $target, $language )
-              = $paragraph =~ /^(highlight)(?:\s+(.*))?$/;
-            if ( $target && !$language ) {
-                $language = 'Perl';
+            if ( $paragraph =~ /^(highlight)(?:\s+(.*))?$/i ) {
+                my ( $target, $language ) = ( $1, $2 );
+                if ( $target && !$language ) {
+                    $language = 'Perl';
+                }
+                $self->highlight( get_highlighter($language) );
             }
-            $self->highlight( get_highlighter($language) );
+            elsif ( $paragraph =~ /^mom\s+tofile\s*/i ) {
+                $self->set_in_file_mode(1);
+            }
         },
-        for => sub {},   # XXX refactor!
         end => sub {
             my ( $self, $paragraph ) = @_;
             $paragraph = $self->_trim($paragraph);
             if ( $paragraph eq 'highlight' ) {
                 $self->highlight('');
+            }
+            elsif ( $paragraph =~ /^mom\s+tofile\s*/i ) {
+                $self->set_in_file_mode(0);
             }
         },
         pod => sub { },    # noop
@@ -305,6 +316,11 @@ sub end_input {
     my $self = shift;
     my $mom  = '';
 
+    if ( $self->fh ) {
+        my $filename = $self->file_name;
+        close $self->fh or croak("Could not close ($filename): $!");
+    }
+
     foreach my $method ( $self->mom_methods ) {
         my $mom_method = "mom_$method";
         my $macro      = ".\U$method";
@@ -339,14 +355,14 @@ END
 
 sub add_to_file {
     my ( $self, $data ) = @_;
-    my $fh = $self->fh
-      or croak("No filehandle found");
+    croak("Not in file mode!") unless $self->in_file_mode;
+    my $fh = $self->fh or croak("No filehandle found");
     print $fh $data;
 }
 
 sub verbatim {
     my ( $self, $verbatim, $paragraph, $line_num ) = @_;
-    if ( my $fh = $self->fh ) {
+    if ( $self->in_file_mode ) {
         $self->add_to_file($verbatim);
         return;
     }
@@ -374,7 +390,7 @@ END
 sub textblock {
     my ( $self, $textblock, $paragraph, $line_num ) = @_;
 
-    if ( my $fh = $self->fh ) {
+    if ( $self->in_file_mode ) {
         $self->add_to_file($textblock);
         return;
     }
@@ -731,14 +747,19 @@ above can be written as:
 For a list of allowable names for syntax highlighting, see
 L<Pod::Parser::Groffmom::Color>.
 
-=item * C<for mom tofile $filename> and C<end mom tofile>
+=item * C<for mom tofile $filename>
+
+This command tells L<Pod::Parser::Groffmom> that you're going to send some
+output to a file.  Must have a filename with it.
+
+=item * C<begin mom tofile>
 
 Sometimes you want to include data in your pod and have it written out to a
 separate file.  This is useful, for example, if you're writing the POD for
 beautiful documentation for a talk, but you want to embed slides for your
 talk.
 
- =for mom tofile tmp/my_slides.html
+ =begin mom tofile
 
  <h1>Some Header</h1>
  <h2>Another header</h2>
@@ -748,16 +769,17 @@ talk.
 Any paragraph or verbatim text included between these tokens are automatically
 sent to the C<$filename> specified in C<=for mom tofile $filename>.  The file
 is opened in I<append> mode, so any text found will be added to what is
-already there.  The text is passed "as is".  If the filename has been
-specified in a previous C<=for mom tofile> command, you don't need to state it
-again unless you're sending the output to a different file.  Stating the
-filename again is a no-op.
+already there.  The text is passed "as is".
 
 If you must pass pod, the leading '=' sign will cause this text to be handled
 by L<Pod::Parser::Groffmom> instead of being passed to your file.  Thus, any
 leading '=' must be escaped in the format you need it in:
 
  =for mom tofile tmp/some.html
+
+ ... perhaps lots of pod ...
+
+ =begin mom tofile
 
  <p>To specify a header in POD:</p>
 
@@ -770,7 +792,7 @@ leading '=' must be escaped in the format you need it in:
 Of course, if the line is indented, it's considered "verbatim" text and will
 be not be processed as a POD command:
 
- =for mom tofile tmp/some.html
+ =begin mom tofile
 
  <p>To specify a header in POD:</p>
 

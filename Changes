@@ -6,7 +6,7 @@ Revision history for Pod-Parser-Groffmom
           items).
         - Allow pod2mom to take an alternate parser.
         - Add 'last_title' method. Useful for subclasses.
-        - Add '=for mom tofile $filename'.
+        - Add '=for mom tofile $filename' and '=begin mom tofile'
         - Reformat paragraphs to be on a single line (this stops problems when
           the newline break causes something to be recognized as a command to
           mom).
