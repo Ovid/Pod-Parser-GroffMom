@@ -90,11 +90,11 @@ Pod::Parser::Groffmom - Convert POD to a format groff_mom can handle.
 
 =head1 VERSION
 
-Version 0.031
+Version 0.040
 
 =cut
 
-our $VERSION = '0.031';
+our $VERSION = '0.040';
 $VERSION = eval $VERSION;
 
 sub _trim {

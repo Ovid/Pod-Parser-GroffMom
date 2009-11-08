@@ -9,7 +9,7 @@ Pod::Parser::Groffmom::Entities - Internal entity conversions
 
 =head1 VERSION
 
-Version 0.031
+Version 0.040
 
 =head1 DESCRIPTION
 
@@ -22,7 +22,7 @@ List gleefully stolen from C<HTML::Entities>.
 
 =cut
 
-our $VERSION = '0.031';
+our $VERSION = '0.040';
 $VERSION = eval $VERSION;
 
 use parent 'Exporter';
