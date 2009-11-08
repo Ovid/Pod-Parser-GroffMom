@@ -1,6 +1,11 @@
 Revision history for Pod-Parser-Groffmom
 
-0.031
+0.40    08/11/2009
+        - No changes, but bumped up the version number because there were
+          enough changes for a major release.
+
+0.031   Unreleased
+        - Rework how '=for mom tofile' is handled.
         - Improve list formatting by allowing extra space if we have a
           non-item after =item (e.g., when lists have descriptions of list
           items).
