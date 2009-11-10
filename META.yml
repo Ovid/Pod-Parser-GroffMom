@@ -1,6 +1,6 @@
 ---
 name: Pod-Parser-Groffmom
-version: 0.040
+version: 0.041
 author:
   - 'Curtis "Ovid" Poe <ovid@cpan.org>'
 abstract: Convert POD to a format groff_mom can handle.
@@ -21,13 +21,13 @@ configure_requires:
 provides:
   Pod::Parser::Groffmom:
     file: lib/Pod/Parser/Groffmom.pm
-    version: 0.040
+    version: 0.041
   Pod::Parser::Groffmom::Color:
     file: lib/Pod/Parser/Groffmom/Color.pm
-    version: 0.040
+    version: 0.041
   Pod::Parser::Groffmom::Entities:
     file: lib/Pod/Parser/Groffmom/Entities.pm
-    version: 0.040
+    version: 0.041
 generated_by: Module::Build version 0.35
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html

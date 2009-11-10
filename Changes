@@ -1,6 +1,9 @@
 Revision history for Pod-Parser-Groffmom
 
-0.40    08/11/2009
+0.041   10/11/2009
+        - Get rid of t/tmp directory.
+
+0.040   08/11/2009
         - No changes, but bumped up the version number because there were
           enough changes for a major release.
 

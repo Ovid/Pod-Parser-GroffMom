@@ -5,10 +5,10 @@ use warnings;
 
 use lib 't/lib';
 use MyTest::PPG ':all';
-use Test::Most 'no_plan'; #tests => 1;
+use Test::Most tests => 2;
 use Pod::Parser::Groffmom;
 
-my $file = 't/tmp/tofile.tmp';
+my $file = 't/tofile.tmp';
 my $pod = <<"END";
 =head1 Some text
 
