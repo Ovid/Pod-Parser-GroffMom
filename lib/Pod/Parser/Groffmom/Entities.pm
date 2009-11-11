@@ -9,7 +9,7 @@ Pod::Parser::Groffmom::Entities - Internal entity conversions
 
 =head1 VERSION
 
-Version 0.041
+Version 0.042
 
 =head1 DESCRIPTION
 
@@ -22,10 +22,10 @@ List gleefully stolen from C<HTML::Entities>.
 
 =cut
 
-our $VERSION = '0.041';
+our $VERSION = '0.042';
 $VERSION = eval $VERSION;
 
-use parent 'Exporter';
+use base 'Exporter';
 our @EXPORT_OK = 'entity_to_num';
 my %entity2char = (
     amp  => 38,    # ampersand

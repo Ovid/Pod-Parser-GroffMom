@@ -1,5 +1,8 @@
 Revision history for Pod-Parser-Groffmom
 
+0.042   11/11/2009
+        - Don't "use parent".  Too little benefit for the dependency (darn)
+
 0.041   10/11/2009
         - Get rid of t/tmp directory.
 
